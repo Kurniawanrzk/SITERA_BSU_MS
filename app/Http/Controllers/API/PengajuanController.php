@@ -75,7 +75,7 @@ class PengajuanController extends Controller
             "timeout" => 5,
         ]);
         if($request->status !== "gagal") {
-            $response = $client->request("POST", "http://127.0.0.1:7000/api/v1/nasabah/ubah-saldo", [
+            $response = $client->request("POST", "http://145.79.10.111:8004/api/v1/nasabah/ubah-saldo", [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',

@@ -23,7 +23,7 @@ class NasabahController extends Controller
             "saldo" => "required"
         ]);
 
-        $response = $this->client("PUT", "http://127.0.0.1:7000/api/v1/nasabah/isi-saldo-nasabah", [
+        $response = $this->client("PUT", "http://145.79.10.111:8004/api/v1/nasabah/isi-saldo-nasabah", [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',

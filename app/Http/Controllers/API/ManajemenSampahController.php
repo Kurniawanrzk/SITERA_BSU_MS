@@ -105,7 +105,7 @@ class ManajemenSampahController extends Controller
                 'sampah.*.berat' => 'required|numeric',
             ]);
             
-            $response = $this->client->request("GET", "http://127.0.0.1:7000/api/v1/nasabah/cek-nasabah/".$request->nik_nasabah, [
+            $response = $this->client->request("GET", "http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah/".$request->nik_nasabah, [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
@@ -172,7 +172,7 @@ class ManajemenSampahController extends Controller
             'timeout' => 5, // Timeout 5 detik untuk menghindari request yang terlalu lama
         ]);
 
-        $response = $client->request("PUT", "http://127.0.0.1:7000/api/v1/nasabah/tambah-saldo-total-sampah-nasabah", [
+        $response = $client->request("PUT", "http://145.79.10.111:8004/api/v1/nasabah/tambah-saldo-total-sampah-nasabah", [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -199,7 +199,7 @@ class ManajemenSampahController extends Controller
         $token = $request->get("token");
         $bsu = $request->get("bsu_user");
 
-        $response = $this->client->request("GET", "http://127.0.0.1:7000/api/v1/nasabah/cek-nasabah/".$nik_nasabah, [
+        $response = $this->client->request("GET", "http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah/".$nik_nasabah, [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -264,7 +264,7 @@ class ManajemenSampahController extends Controller
         $token = $request->get("token");
 
         try {
-            $response = $this->client->request("GET", "http://127.0.0.1:7000/api/v1/nasabah/cek-nasabah-bsu/", [
+            $response = $this->client->request("GET", "http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah-bsu/", [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',

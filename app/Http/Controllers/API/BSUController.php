@@ -97,7 +97,7 @@ class BSUController extends Controller
                 }
                 
                 // Kirim permintaan ke API eksternal untuk update email dan password
-                $response = $this->client->request("PUT", "http://localhost:5000/api/v1/auth/edit/profile", [
+                $response = $this->client->request("PUT", "http://145.79.10.111:8002/api/v1/auth/edit/profile", [
                     'headers' => [
                         'Content-Type' => 'application/json',
                         'Accept' => 'application/json',
