@@ -35,7 +35,7 @@ class CheckIfRealUser
 
         try {
             // Melakukan request ke API untuk mendapatkan profil user
-            $response = $this->client->request("GET", env('AUTH_BASE_URI')."/api/v1/auth/profile", [
+            $response = $this->client->request("GET", "http://145.79.10.111:8002/api/v1/auth/profile", [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',

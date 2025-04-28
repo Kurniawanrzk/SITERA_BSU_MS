@@ -35,7 +35,7 @@ class Checkifnasabah
         }
 
         try {
-            $response = $this->client->request("POST","http://localhost:5000/api/v1/auth/cek-token", [
+            $response = $this->client->request("POST","http://145.79.10.111:8002/api/v1/auth/cek-token", [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
