@@ -227,7 +227,7 @@ class ManajemenSampahController extends Controller
             "status" => true,
             "nasabah" => $nasabah, // Include nasabah data
             "transaksi" => [
-                "frekuensi" => $transaksi->count() > 10 ? "high" :( $transaksi->count() > 5 ? "medium" : "low"),
+                "frekuensi" => $transaksi->count() > 10 ? "tinggi" :( $transaksi->count() > 5 ? "sedang" : "rendah"),
                 "total_transaksi" => $transaksi->count(),
                 "kontribusi_terakhir" => $transaksi->last() ? $transaksi->last()->waktu_transaksi : null,
                 "total_saldo" => $transaksi->sum('total_harga'),
