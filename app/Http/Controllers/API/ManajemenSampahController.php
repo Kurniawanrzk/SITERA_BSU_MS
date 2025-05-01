@@ -226,7 +226,13 @@ class ManajemenSampahController extends Controller
         return response()->json([
             "status" => true,
             "nasabah" => $nasabah, // Include nasabah data
-            "transaksi" => $transaksi // Include transactions
+            "transaksi" => [
+                "frekuensi" => $transaksi->count() > 10 ? "high" :( $transaksi->count() > 5 ? "medium" : "low"),
+                "total_transaksi" => $transaksi->count(),
+                "kontribusi_terakhir" => $transaksi->last() ? $transaksi->last()->waktu_transaksi : null,
+                "total_saldo" => $transaksi->sum('total_harga'),
+                "jenis_sampah" => $transaksi->pluck('detailTransaksi.sampah.nama')->unique(),
+            ]
         ], 200);
     }
     public function cekTransaksiNasabahBsuId(Request $request)
