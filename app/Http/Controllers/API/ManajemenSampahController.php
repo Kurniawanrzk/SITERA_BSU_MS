@@ -253,8 +253,10 @@ class ManajemenSampahController extends Controller
         try {
             // Mengambil data nasabah dari API eksternal
             $response = $client->request('GET', 'http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah-bsu', [
-                'query' => [
-                    'bsu_id' => $bsu->id
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => $request->get("token"),
                 ]
             ]);
             
