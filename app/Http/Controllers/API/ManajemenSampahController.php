@@ -266,8 +266,8 @@ class ManajemenSampahController extends Controller
             $nasabahMap = [];
             if ($nasabahData['status'] && isset($nasabahData['data'])) {
                 foreach ($nasabahData['data'] as $nasabahItem) {
-                    if (isset($nasabahItem['nasabah']['nik'])) {
-                        $nasabahMap[$nasabahItem['nasabah']['nik']] = $nasabahItem;
+                    if (isset($nasabahItem['nik'])) {
+                        $nasabahMap[$nasabahItem['nik']] = $nasabahItem;
                     }
                 }
             }
