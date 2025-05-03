@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
+    /** 
      * Run the migrations.
      */
     public function up(): void
@@ -17,8 +17,7 @@ return new class extends Migration
             $table->foreign("bank_sampah_unit_id")->references('id')->on('bank_sampah_units')->onDelete('cascade');
             $table->string("tipe");
             $table->string("nama");
-            $table->decimal("harga_per_unit", 10, 2);
-            $table->string("satuan_per_unit");
+            $table->decimal("harga_satuan", 10, 2);
             $table->timestamps();
         });
     }
