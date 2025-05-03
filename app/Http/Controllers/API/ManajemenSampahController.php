@@ -78,7 +78,8 @@ class ManajemenSampahController extends Controller
         $file = $request->file('file');
         $path = $file->getRealPath();
         $data = array_map('str_getcsv', file($path));
-        foreach ($data as $row) {
+        foreach ($data as $index => $row) {
+            if($index == 0) continue; // Skip header row
             $sampah_bsu_baru = new Sampah;
             $sampah_bsu_baru->bank_sampah_unit_id = $request->get("bsu_id");
             $sampah_bsu_baru->tipe = $row[0]; // Assuming the first column is 'tipe'
