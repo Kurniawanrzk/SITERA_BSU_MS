@@ -27,7 +27,7 @@ class ManajemenSampahController extends Controller
 
     public function cekSampahBerdasarkanBSU(Request $request)
     {
-        $data_sampah_bsu = Sampah::where("bank_sampah_unit_id",$request->get("bsu_user")->id)->first();
+        $data_sampah_bsu = Sampah::where("bank_sampah_unit_id",$request->get("bsu_id"))->first();
         if(isset($data_sampah_bsu)){
             return response()
             ->json([
