@@ -238,71 +238,18 @@ class ManajemenSampahController extends Controller
     }
     public function cekTransaksiNasabahBsuId(Request $request)
     {
-        // Mendapatkan BSU berdasarkan user_id
         $bsu = BankSampahUnit::where("user_id", $request->get("user_id"))->first();
-        
-        // Mengambil transaksi berdasarkan ID BSU
-        $transaksi = Transaksi::with('detailTransaksi.sampah')
-            ->where("bank_sampah_unit_id", $bsu->id)
-            ->has('detailTransaksi')
+        // Mengambil transaksi berdasarkan ID nasabah
+        $transaksi = Transaksi::with('detailTransaksi.sampah') // Load detailTransaksi dan related sampah
+            ->where("bank_sampah_unit_id", $bsu->id) // Menggunakan ID nasabah untuk pencarian
+            ->has('detailTransaksi') // Memastikan transaksi memiliki detail
             ->get();
-        
-        // Inisialisasi Guzzle HTTP Client
-        $client = new \GuzzleHttp\Client();
-        
-        try {
-            // Mengambil data nasabah dari API eksternal
-            $response = $client->request('GET', 'http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah-bsu', [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'Authorization' => $request->get("token"),
-                ],
-                'query' => [
-                    'bsu_id' => $bsu->id,
-                ]
-            ]);
-            
-            $nasabahData = json_decode($response->getBody(), true);
-            
-            // Membuat mapping NIK ke data nasabah untuk mempermudah penggabungan data
-            $nasabahMap = [];
-            if ($nasabahData['status'] && isset($nasabahData['data'])) {
-                foreach ($nasabahData['data'] as $nasabahItem) {
-                    if (isset($nasabahItem['nasabah']['nik'])) {
-                        $nasabahMap[$nasabahItem['nasabah']['nik']] = $nasabahItem;
-                    }
-                }
-            }
-            
-            // Menggabungkan data transaksi dengan data nasabah
-            $mergedData = $transaksi->map(function ($item) use ($nasabahMap) {
-                $data = $item->toArray();
-                
-                // Menambahkan data nasabah jika NIK cocok
-                if (isset($data['nik']) && isset($nasabahMap[$data['nik']])) {
-                    $data['nasabah_info'] = $nasabahMap[$data['nik']];
-                } else {
-                    $data['nasabah_info'] = null;
-                }
-                
-                return $data;
-            });
-            
-            // Mengembalikan response dengan status dan data gabungan
-            return response()->json([
-                "status" => true,
-                "data" => $mergedData
-            ], 200);
-            
-        } catch (\Exception $e) {
-            // Handle error jika terjadi masalah saat mengambil data nasabah
-            return response()->json([
-                "status" => false,
-                "message" => "Gagal mendapatkan data nasabah: " . $e->getMessage(),
-                "data" => $transaksi
-            ], 500);
-        }
+    
+        // Mengembalikan response dengan status dan data transaksi
+        return response()->json([
+            "status" => true,
+            "data" =>$transaksi // Menyertakan data transaksi
+        ], 200);
     }
 
     public function cekTransaksiNasabah($nik_nasabah)
