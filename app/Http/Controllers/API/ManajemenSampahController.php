@@ -361,25 +361,25 @@ class ManajemenSampahController extends Controller
         ], 200);
     }
 
-    public function cekNasabahBSU(Request $request)
-    {
-        $token = $request->get("token");
+    // public function cekNasabahBSU(Request $request)
+    // {
+    //     $token = $request->get("token");
 
-        try {
-            $response = $this->client->request("GET", "http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah-bsu/", [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'Authorization' => $token,
-                ]
-            ]);
-            $nasabah = json_decode($response->getBody()->getContents(), true);
+    //     try {
+    //         $response = $this->client->request("GET", "http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah-bsu/", [
+    //             'headers' => [
+    //                 'Content-Type' => 'application/json',
+    //                 'Accept' => 'application/json',
+    //                 'Authorization' => $token,
+    //             ]
+    //         ]);
+    //         $nasabah = json_decode($response->getBody()->getContents(), true);
 
-            return $nasabah;
-        } catch (\Throwable $th) {
-            return $th->getMessage();
-        }
-    }
+    //         return $nasabah;
+    //     } catch (\Throwable $th) {
+    //         return $th->getMessage();
+    //     }
+    // }
 
     public function editSampah(Request $request, $id)
     {
