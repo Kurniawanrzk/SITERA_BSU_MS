@@ -241,11 +241,25 @@ class ManajemenSampahController extends Controller
         // Mendapatkan BSU berdasarkan user_id
         $bsu = BankSampahUnit::where("user_id", $request->get("user_id"))->first();
         
-        // Mengambil transaksi berdasarkan ID BSU
-        $transaksi = Transaksi::with('detailTransaksi.sampah')
+        if (!$bsu) {
+            return response()->json([
+                "status" => false,
+                "message" => "Bank Sampah Unit tidak ditemukan",
+            ], 404);
+        }
+        
+        // Mendapatkan parameter pagination
+        $perPage = $request->get('per_page', 10); // Default 10 item per halaman
+        $page = $request->get('page', 1); // Default halaman 1
+        
+        // Mengambil transaksi berdasarkan ID BSU dengan pagination
+        $transaksiQuery = Transaksi::with('detailTransaksi.sampah')
             ->where("bank_sampah_unit_id", $bsu->id)
             ->has('detailTransaksi')
-            ->get();
+            ->latest('waktu_transaksi'); // Mengurutkan dari yang terbaru
+        
+        // Eksekusi query dengan pagination
+        $transaksiPaginated = $transaksiQuery->paginate($perPage);
         
         // Inisialisasi Guzzle HTTP Client
         $client = new \GuzzleHttp\Client([
@@ -258,7 +272,10 @@ class ManajemenSampahController extends Controller
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
-                    'Authorization' => $request->get("token"),
+                    'Authorization' => $request->header('Authorization'),
+                ],
+                'query' => [
+                    'bsu_id' => $bsu->id
                 ]
             ]);
             
@@ -274,8 +291,11 @@ class ManajemenSampahController extends Controller
                 }
             }
             
+            // Mendapatkan data transaksi dari pagination
+            $transaksiItems = $transaksiPaginated->items();
+            
             // Menggabungkan data transaksi dengan data nasabah
-            $mergedData = $transaksi->map(function ($item) use ($nasabahMap) {
+            $mergedData = collect($transaksiItems)->map(function ($item) use ($nasabahMap) {
                 $data = $item->toArray();
                 
                 // Menambahkan data nasabah jika NIK cocok
@@ -330,11 +350,24 @@ class ManajemenSampahController extends Controller
                 'total_penjualan_keseluruhan' => $totalPenjualan
             ];
             
-            // Mengembalikan response dengan status, data gabungan, dan statistik
+            // Menyiapkan informasi pagination untuk response
+            $paginationInfo = [
+                'current_page' => $transaksiPaginated->currentPage(),
+                'per_page' => $transaksiPaginated->perPage(),
+                'total' => $transaksiPaginated->total(),
+                'last_page' => $transaksiPaginated->lastPage(),
+                'next_page_url' => $transaksiPaginated->nextPageUrl(),
+                'prev_page_url' => $transaksiPaginated->previousPageUrl(),
+                'from' => $transaksiPaginated->firstItem(),
+                'to' => $transaksiPaginated->lastItem(),
+            ];
+            
+            // Mengembalikan response dengan status, data gabungan, statistik, dan info pagination
             return response()->json([
                 "status" => true,
                 "data" => $mergedData,
-                "statistik" => $statistik
+                "statistik" => $statistik,
+                "pagination" => $paginationInfo
             ], 200);
             
         } catch (\Exception $e) {
@@ -342,7 +375,7 @@ class ManajemenSampahController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Gagal mendapatkan data: " . $e->getMessage(),
-                "data" => $transaksi
+                "data" => $transaksiPaginated->items()
             ], 500);
         }
     }
