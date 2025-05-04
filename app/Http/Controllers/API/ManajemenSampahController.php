@@ -69,6 +69,7 @@ class ManajemenSampahController extends Controller
         }
     }
 
+
     public function tambahSampahDariCSV(Request $request)
     {
         $request->validate([
@@ -82,8 +83,8 @@ class ManajemenSampahController extends Controller
             if($index == 0) continue; // Skip header row
             $sampah_bsu_baru = new Sampah;
             $sampah_bsu_baru->bank_sampah_unit_id = $request->get("bsu_id");
-            $sampah_bsu_baru->tipe = $row[0]; // Assuming the first column is 'tipe'
-            $sampah_bsu_baru->nama = $row[1]; // Assuming the second column is 'nama'
+            $sampah_bsu_baru->tipe = strtolower($row[0]); // Assuming the first column is 'tipe'
+            $sampah_bsu_baru->nama = strtolower($row[1]); // Assuming the second column is 'nama'
             $sampah_bsu_baru->harga_satuan = $row[2]; // Assuming the third column is 'harga_per_unit'
             $sampah_bsu_baru->save();
         }
