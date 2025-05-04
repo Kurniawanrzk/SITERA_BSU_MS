@@ -249,7 +249,7 @@ class ManajemenSampahController extends Controller
         // Mengembalikan response dengan status dan data transaksi
         return response()->json([
             "status" => true,
-            "data" =>$transaksi // Menyertakan data transaksi
+            "data" => $transaksi // Menyertakan data transaksi
         ], 200);
     }
 

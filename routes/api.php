@@ -14,6 +14,8 @@ Route::get("/v1/bsu/cek-user/{user_id}",[BSUController::class, "cekUser"]);
 Route::get("/v1/bsu/cek-bsu", [BSUController::class, "cekSemuaBSU"]);
 Route::get("/v1/bsu/cek-bsu/{id}", [BSUController::class, "cekBSUBerdasarkanNoRegis"]);
 // Route yang hanya BSU yang bisa buka
+Route::get("/v1/bsu/cek-semua-transaksi-bsu", [ManajemenSampahController::class, "cekTransaksiNasabahBsuId"]);
+
 Route::middleware('checkIfBsu')->group(function(){
     Route::put("/v1/bsu/edit/profile", [BSUController::class, "editProfileBsu"]);
     Route::get("/v1/bsu/cek-sampah", [ManajemenSampahController::class, "cekSampahBerdasarkanBSU"]);
@@ -22,7 +24,6 @@ Route::middleware('checkIfBsu')->group(function(){
     Route::get("/v1/bsu/profile", [BSUController::class, "cekProfileBsu"]);
     Route::post("/v1/bsu/transaksi-sampah", [ManajemenSampahController::class, "transaksiSampahBSUNasabah"]);
     Route::get("/v1/bsu/cek-semua-transaksi-nasabah/{nik_nasabah}", [ManajemenSampahController::class, "cekSemuaTransaksiNasabahBSUnik"]);
-    Route::get("/v1/bsu/cek-semua-transaksi-bsu", [ManajemenSampahController::class, "cekTransaksiNasabahBsuId"]);
     Route::put('/v1/bsu/edit-sampah/{id}', [ManajemenSampahController::class, 'editSampah']);
     Route::delete('/v1/bsu/hapus-sampah/{id}', [ManajemenSampahController::class, 'deleteSampah']);
     Route::post("/v1/bsu/proses-ajuan-penarikan/{pengajuan_id}", [PengajuanController::class, "BSUMemprosesAjuan"]);
