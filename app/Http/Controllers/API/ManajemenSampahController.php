@@ -238,19 +238,113 @@ class ManajemenSampahController extends Controller
     }
     public function cekTransaksiNasabahBsuId(Request $request)
     {
-        
+        // Mendapatkan BSU berdasarkan user_id
         $bsu = BankSampahUnit::where("user_id", $request->get("user_id"))->first();
-        // Mengambil transaksi berdasarkan ID nasabah
-        $transaksi = Transaksi::with('detailTransaksi.sampah') // Load detailTransaksi dan related sampah
-            ->where("bank_sampah_unit_id", $bsu->id) // Menggunakan ID nasabah untuk pencarian
-            ->has('detailTransaksi') // Memastikan transaksi memiliki detail
+        
+        // Mengambil transaksi berdasarkan ID BSU
+        $transaksi = Transaksi::with('detailTransaksi.sampah')
+            ->where("bank_sampah_unit_id", $bsu->id)
+            ->has('detailTransaksi')
             ->get();
-    
-        // Mengembalikan response dengan status dan data transaksi
-        return response()->json([
-            "status" => true,
-            "data" => $transaksi // Menyertakan data transaksi
-        ], 200);
+        
+        // Inisialisasi Guzzle HTTP Client
+        $client = new \GuzzleHttp\Client([
+            'timeout' => 5, // Timeout 5 detik untuk menghindari request yang terlalu lama
+        ]);
+        
+        try {
+            // Mengambil data nasabah dari API eksternal
+            $response = $client->request('GET', 'http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah-bsu', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => $request->get("token"),
+                ]
+            ]);
+            
+            $nasabahData = json_decode($response->getBody(), true);
+            
+            // Membuat mapping NIK ke data nasabah untuk mempermudah penggabungan data
+            $nasabahMap = [];
+            if ($nasabahData['status'] && isset($nasabahData['data'])) {
+                foreach ($nasabahData['data'] as $nasabahItem) {
+                    if (isset($nasabahItem['nik'])) {
+                        $nasabahMap[$nasabahItem['nik']] = $nasabahItem;
+                    }
+                }
+            }
+            
+            // Menggabungkan data transaksi dengan data nasabah
+            $mergedData = $transaksi->map(function ($item) use ($nasabahMap) {
+                $data = $item->toArray();
+                
+                // Menambahkan data nasabah jika NIK cocok
+                if (isset($data['nik']) && isset($nasabahMap[$data['nik']])) {
+                    $data['nasabah_info'] = $nasabahMap[$data['nik']];
+                } else {
+                    $data['nasabah_info'] = null;
+                }
+                
+                return $data;
+            });
+            
+            // Hitung statistik
+            
+            // 1. Jumlah transaksi pada minggu ini
+            $startOfWeek = now()->startOfWeek();
+            $endOfWeek = now()->endOfWeek();
+            
+            $transaksiMingguIni = Transaksi::where("bank_sampah_unit_id", $bsu->id)
+                ->whereBetween('waktu_transaksi', [$startOfWeek, $endOfWeek])
+                ->count();
+            
+            // 2. Sampah terlaris berdasarkan total berat terbanyak
+            $tipeSampahTerlaris = DB::table('detail_transaksi')
+                ->join('transaksi', 'detail_transaksi.transaksi_id', '=', 'transaksi.id')
+                ->join('sampah', 'detail_transaksi.sampah_id', '=', 'sampah.id')
+                ->where('transaksi.bank_sampah_unit_id', $bsu->id)
+                ->select('sampah.tipe', 'sampah.nama', DB::raw('SUM(detail_transaksi.berat) as total_berat'))
+                ->groupBy('sampah.tipe', 'sampah.nama')
+                ->orderBy('total_berat', 'desc')
+                ->first();
+            
+            // 3. Total berat keseluruhan
+            $totalBerat = DB::table('detail_transaksi')
+                ->join('transaksi', 'detail_transaksi.transaksi_id', '=', 'transaksi.id')
+                ->where('transaksi.bank_sampah_unit_id', $bsu->id)
+                ->sum('detail_transaksi.berat');
+            
+            // 4. Total penjualan keseluruhan
+            $totalPenjualan = Transaksi::where("bank_sampah_unit_id", $bsu->id)
+                ->sum('total_harga');
+            
+            // Menyiapkan data statistik
+            $statistik = [
+                'transaksi_minggu_ini' => $transaksiMingguIni,
+                'tipe_sampah_terlaris' => $tipeSampahTerlaris ? [
+                    'tipe' => $tipeSampahTerlaris->tipe,
+                    'nama' => $tipeSampahTerlaris->nama,
+                    'total_berat' => $tipeSampahTerlaris->total_berat
+                ] : null,
+                'total_berat_keseluruhan' => $totalBerat,
+                'total_penjualan_keseluruhan' => $totalPenjualan
+            ];
+            
+            // Mengembalikan response dengan status, data gabungan, dan statistik
+            return response()->json([
+                "status" => true,
+                "data" => $mergedData,
+                "statistik" => $statistik
+            ], 200);
+            
+        } catch (\Exception $e) {
+            // Handle error jika terjadi masalah saat mengambil data nasabah
+            return response()->json([
+                "status" => false,
+                "message" => "Gagal mendapatkan data: " . $e->getMessage(),
+                "data" => $transaksi
+            ], 500);
+        }
     }
 
     public function cekTransaksiNasabah($nik_nasabah)
