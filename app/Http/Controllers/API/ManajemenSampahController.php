@@ -193,8 +193,6 @@ class ManajemenSampahController extends Controller
 
     }
 
-    
-
     // Untuk BSU
     public function cekSemuaTransaksiNasabahBSUnik(Request $request, $nik_nasabah)
     {
@@ -414,6 +412,34 @@ class ManajemenSampahController extends Controller
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
+    }
+
+    public function getTipeSampah(Request $request)
+    {
+        $tipe_sampah = Sampah::where("bank_sampah_unit_id", $request->get("bsu_id"))
+            ->select("tipe")
+            ->distinct()
+            ->get();
+        if ($tipe_sampah->isEmpty()) {
+            return response()->json([
+                "status" => false,
+                "message" => "Tidak ada tipe sampah yang ditemukan"
+            ], 404);
+        }
+        return response()->json([
+            "status" => true,
+            "data" => $tipe_sampah
+        ], 200);
+    }
+
+    public function getSampahByTipe($tipe)
+    {
+        $sampah = Sampah::where('tipe', $tipe)->get();
+        if ($sampah->isEmpty()) {
+            return response()->json(['status' => false, 'message' => 'Tidak ada sampah dengan tipe tersebut'], 404);
+        }
+
+        return response()->json(['status' => true, 'data' => $sampah], 200);
     }
 
     public function editSampah(Request $request, $id)
