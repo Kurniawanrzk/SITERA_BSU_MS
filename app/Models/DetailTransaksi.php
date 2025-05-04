@@ -24,6 +24,7 @@ class DetailTransaksi extends Model
         'berat',
         'harga_satuan',
         'subtotal',
+        'is_cocacola'
     ];
 
     /**
