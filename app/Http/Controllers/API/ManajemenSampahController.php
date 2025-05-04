@@ -54,8 +54,8 @@ class ManajemenSampahController extends Controller
         $sampah_bsu_baru = new Sampah;
         
         $sampah_bsu_baru->bank_sampah_unit_id = $request->get("bsu_id");
-        $sampah_bsu_baru->tipe =  $request->tipe;
-        $sampah_bsu_baru->nama = $request->nama;
+        $sampah_bsu_baru->tipe = strtolower($request->tipe);
+        $sampah_bsu_baru->nama = strtolower($request->nama);
         $sampah_bsu_baru->harga_satuan = $request->harga_satuan;
         $sampah_bsu_baru->save();
 
