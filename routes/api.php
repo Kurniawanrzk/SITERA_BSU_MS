@@ -23,7 +23,7 @@ Route::middleware('checkIfBsu')->group(function(){
     Route::get("/v1/bsu/profile", [BSUController::class, "cekProfileBsu"]);
     Route::get("/v1/bsu/cek-semua-transaksi-bsu", [ManajemenSampahController::class, "cekTransaksiNasabahBsuId"]);
     Route::get("v1/bsu/cek-tipe-sampah", [ManajemenSampahController::class, "getTipeSampah"]);
-    Route::get("v1/bsu/cek-sampah-berdasarkan-tipe", [ManajemenSampahController::class, "getSampahByTipe"]);
+    Route::get("v1/bsu/cek-sampah-berdasarkan-tipe/{tipe}", [ManajemenSampahController::class, "getSampahByTipe"]);
     Route::post("/v1/bsu/transaksi-sampah", [ManajemenSampahController::class, "transaksiSampahBSUNasabah"]);
     Route::get("/v1/bsu/cek-semua-transaksi-nasabah/{nik_nasabah}", [ManajemenSampahController::class, "cekSemuaTransaksiNasabahBSUnik"]);
     Route::put('/v1/bsu/edit-sampah/{id}', [ManajemenSampahController::class, 'editSampah']);
