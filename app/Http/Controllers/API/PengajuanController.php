@@ -135,7 +135,7 @@ class PengajuanController extends Controller
         $client = new Client([
             "timeout" => 5,
         ]);
-        if($request->status !== "gagal") {
+        if($request->status !== "tolak") {
             $response = $client->request("POST", "http://145.79.10.111:8004/api/v1/nasabah/ubah-saldo", [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -150,7 +150,7 @@ class PengajuanController extends Controller
     
             $response = json_decode($response->getBody());
             $pengajuan->update([
-                "status" => "berhasil",
+                "status" => "setujui",
                 "keterangan" => $request->keterangan ?? null
             ]);
 
@@ -160,7 +160,16 @@ class PengajuanController extends Controller
                 "message" => "pengajuan berhasil"
             ]);
         } else {
+            $pengajuan->update([
+                "status" => "tolak",
+                "keterangan" => $request->keterangan ?? null
+            ]);
 
+            return response()
+            ->json([
+                "status" => true,
+                "message" => "pengajuan berhasil"
+            ]);
         }
     }
 }
