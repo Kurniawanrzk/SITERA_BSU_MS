@@ -150,7 +150,7 @@ class PengajuanController extends Controller
     
             $response = json_decode($response->getBody());
             $pengajuan->update([
-                "status" => "setujui",
+                "status" => "berhasil",
                 "keterangan" => $request->keterangan ?? null
             ]);
 
@@ -161,7 +161,7 @@ class PengajuanController extends Controller
             ]);
         } else {
             $pengajuan->update([
-                "status" => "tolak",
+                "status" => "gagal",
                 "keterangan" => $request->keterangan ?? null
             ]);
 
