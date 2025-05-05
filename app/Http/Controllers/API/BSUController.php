@@ -32,6 +32,94 @@ class BSUController extends Controller
         ], 200);    
     }
 
+    public function cekDataUtamaBSU(Request $request)
+    {
+        $client = new Client([
+            'timeout' => 5, // Timeout 5 detik untuk menghindari request yang terlalu lama
+        ]);
+
+        $response = $client->request("GET", "http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah-bsu", [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => $request->header('Authorization'),
+            ],
+        ]);
+        $response = json_decode($response->getBody(), true)['data'];
+        $total_nasabah = count($response);
+        $total_sampah = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))->sum("berat");
+        $total_transaksi = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))->count();
+        $total_pendapatan = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))->sum("total_harga");
+
+        return response()->json([
+            "status" => true,
+            "data" => [
+                "total_nasabah" => $total_nasabah,
+                "total_sampah" => $total_sampah,
+                "total_transaksi" => $total_transaksi,
+                "total_pendapatan" => $total_pendapatan
+            ]
+        ], 200);
+    }
+
+    public function cekTrenPengumpulanSampah(Request $request)
+    {
+        $jenjang = $request->get("jenjang");
+
+        if($jenjang == "harian")
+        {
+            $startDate = Carbon::now()->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+        } elseif($jenjang == "mingguan") {
+            $startDate = Carbon::now()->startOfWeek();
+            $endDate = Carbon::now()->endOfWeek();
+        } elseif($jenjang == "bulanan") {
+            $startDate = Carbon::now()->startOfMonth();
+            $endDate = Carbon::now()->endOfMonth();
+        } else {
+            return response()->json([
+                "status" => false,
+                "message" => "Invalid jenjang parameter."
+            ], 400);
+        }
+
+        $pendapatan = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))
+            ->whereBetween("waktu_transaksi", [$startDate, $endDate])
+            ->select(
+                DB::raw("DATE(waktu_transaksi) as tanggal"),
+                DB::raw("SUM(total_harga) as total_pendapatan")
+            )
+            ->groupBy("tanggal")
+            ->orderBy("tanggal", "asc")
+            ->get();
+        $berat = DetailTransaksi::join("transaksi", "
+            detail_transaksi.transaksi_id", "=", "transaksi.id")
+            ->where("transaksi.bank_sampah_unit_id", $request->get("bsu_id"))
+            ->whereBetween("transaksi.waktu_transaksi", [$startDate, $endDate])
+            ->select(
+                DB::raw("DATE(transaksi.waktu_transaksi) as tanggal"),
+                DB::raw("SUM(detail_transaksi.berat) as total_berat")
+            )
+            ->groupBy("tanggal")
+            ->orderBy("tanggal", "asc")
+            ->get();
+        $sampah = Sampah::where("bank_sampah_unit_id", $request->get("bsu_id"));
+        if($sampah->exists())
+        {
+            $sampah = $sampah->get();
+        } else {
+            $sampah = [];
+        }
+        return response()->json([
+            "status" => true,
+            "data" => [
+                "pendapatan" => $pendapatan,
+                "berat" => $berat,
+                "sampah" => $sampah
+            ]
+        ], 200);
+    }
+
     public function cekBSUBerdasarkanNoRegis(Request $request, $id)
     {
         $bsu = BankSampahUnit::find($id);
