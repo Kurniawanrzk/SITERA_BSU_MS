@@ -4,9 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+use \GuzzleHttp\Client;
+use \GuzzleHttp\Exception\RequestException;
 use App\Models\{PengajuanPenarikan, BankSampahUnit};
+
 class PengajuanController extends Controller
 {
     public function nasabahMengajukanPenarikan(Request $request)
@@ -75,10 +76,10 @@ class PengajuanController extends Controller
         $result = [];
         
         // Inisialisasi Guzzle Client
-        $client = new Client([
-            "timeout" => 5,
+        $client = new \GuzzleHttp\Client([
+            'timeout' => 5,
         ]);
-        
+
         // Proses setiap pengajuan untuk mendapatkan data nasabah
         foreach ($pengajuanData as $pengajuan) {
             try {
