@@ -52,15 +52,78 @@ class PengajuanController extends Controller
         ]);
     }
 
+    use GuzzleHttp\Client;
+    use GuzzleHttp\Exception\RequestException;
+    
     public function cekAjuanBSU(Request $request)
     {
+        // Dapatkan data BSU
         $bsu = BankSampahUnit::where("user_id", $request->get("user_id"))->first();
-        return response()
-        ->json([
-            "status" => true,
-            "data" => PengajuanPenarikan::where("bank_sampah_unit_id", $bsu->id)->get()
+        
+        // Dapatkan pengajuan penarikan
+        $pengajuanData = PengajuanPenarikan::where("bank_sampah_unit_id", $bsu->id)->get();
+        
+        // Jika tidak ada pengajuan, kembalikan response kosong
+        if ($pengajuanData->isEmpty()) {
+            return response()->json([
+                "status" => true,
+                "data" => []
+            ]);
+        }
+        
+        // Siapkan array untuk hasil akhir
+        $result = [];
+        
+        // Inisialisasi Guzzle Client
+        $client = new Client([
+            "timeout" => 5,
         ]);
         
+        // Proses setiap pengajuan untuk mendapatkan data nasabah
+        foreach ($pengajuanData as $pengajuan) {
+            try {
+                // Ambil data nasabah dari API external dengan token
+                $response = $client->request('GET', 'http://145.79.10.111:8004/api/v1/nasabah/cek-nasabah-bsu', [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $request->get("token"),
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json'
+                    ]
+                ]);
+                
+                // Parsing response
+                $responseData = json_decode($response->getBody()->getContents(), true);
+                
+                // Cari nasabah dengan NIK yang sesuai
+                $nasabahData = null;
+                if (isset($responseData['status']) && $responseData['status'] && !empty($responseData['data'])) {
+                    foreach ($responseData['data'] as $nasabah) {
+                        if ($nasabah['nik'] == $pengajuan->nik) {
+                            $nasabahData = $nasabah;
+                            break;
+                        }
+                    }
+                }
+            } catch (RequestException $e) {
+                // Handle error jika terjadi masalah saat pemanggilan API
+                $nasabahData = null;
+                // Opsional: log error
+                \Log::error('Error fetching nasabah data: ' . $e->getMessage());
+            }
+            
+            // Gabungkan data pengajuan dengan data nasabah
+            $mergedData = [
+                'pengajuan' => $pengajuan,
+                'nasabah' => $nasabahData
+            ];
+            
+            $result[] = $mergedData;
+        }
+        
+        return response()->json([
+            "status" => true,
+            "data" => $result
+        ]);
     }
 
     public function BSUMemprosesAjuan(Request $request,$pengajuan_id)
