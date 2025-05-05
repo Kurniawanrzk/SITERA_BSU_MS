@@ -47,15 +47,7 @@ class BSUController extends Controller
         ]);
         $response = json_decode($response->getBody(), true)['data'];
         $total_nasabah = count($response);
-        $total_berat_sampah = DetailTransaksi::join("transaksi", "
-            detail_transaksi.transaksi_id", "=", "transaksi.id")
-            ->where("transaksi.bank_sampah_unit_id", $request->get("bsu_id"))
-            ->select(
-                DB::raw("SUM(detail_transaksi.berat) as total_berat")
-            )
-            ->groupBy("transaksi.bank_sampah_unit_id")
-            ->orderBy("total_berat", "desc")
-            ->get();
+        $total_berat_sampah = DetailTransaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))->sum("berat"); 
         $total_transaksi = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))->count();
         $total_pendapatan = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))->sum("total_harga");
 
