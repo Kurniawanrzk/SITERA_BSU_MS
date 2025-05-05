@@ -31,6 +31,8 @@ Route::middleware('checkIfBsu')->group(function(){
     Route::post("/v1/bsu/proses-ajuan-penarikan/{pengajuan_id}", [PengajuanController::class, "BSUMemprosesAjuan"]);
     Route::get("v1/bsu/cek-rekapitulasi-bsu", [BSUController::class, "cekRekapitulasi"]);
     Route::get("v1/bsu/cek-ajuan-bsu", [PengajuanController::class, "cekAjuanBSU"]);
+    Route::get("v1/bsu/cek-data-utama-bsu", [BSUController::class, "cekDataUtamaBSU"]);
+    Route::get("v1/bsu/cek-tren-pengumpulan-sampah", [BSUController::class, "cekTrenPengumpulanSampah"]);
 
 });
 
