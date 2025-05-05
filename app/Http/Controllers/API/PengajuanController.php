@@ -52,9 +52,6 @@ class PengajuanController extends Controller
             "data" => PengajuanPenarikan::where("nik", $nik)->where("bank_sampah_unit_id", $bsu_id)->get()
         ]);
     }
-
-    use GuzzleHttp\Client;
-    use GuzzleHttp\Exception\RequestException;
     
     public function cekAjuanBSU(Request $request)
     {
