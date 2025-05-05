@@ -58,7 +58,7 @@ class BSUController extends Controller
             "status" => true,
             "data" => [
                 "total_nasabah" => $total_nasabah,
-                "total_sampah" => $total_sampah,
+                "total_sampah" => $total_berat_sampah,
                 "total_transaksi" => $total_transaksi,
                 "total_pendapatan" => $total_pendapatan
             ]
