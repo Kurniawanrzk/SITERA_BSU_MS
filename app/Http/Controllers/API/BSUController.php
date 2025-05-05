@@ -70,44 +70,42 @@ class BSUController extends Controller
         $jenjang = $request->get("jenjang");
     
         if ($jenjang == "harian") {
-            $format = "%Y-%m-%d";
             $startDate = Carbon::now()->startOfDay();
             $endDate = Carbon::now()->endOfDay();
+            $group = "DATE(waktu_transaksi)";
         } elseif ($jenjang == "mingguan") {
-            $format = "%Y-%m-%d";
             $startDate = Carbon::now()->startOfWeek();
             $endDate = Carbon::now()->endOfWeek();
+            $group = "YEARWEEK(waktu_transaksi, 1)";
         } elseif ($jenjang == "bulanan") {
-            $format = "%Y-%m";
             $startDate = Carbon::now()->startOfYear();
             $endDate = Carbon::now()->endOfYear();
-        } else {
-            return response()->json([
-                "status" => false,
-                "message" => "Invalid jenjang parameter."
-            ], 400);
+            $group = "DATE_FORMAT(waktu_transaksi, '%Y-%m')";
         }
-    
+        
+        // Pendapatan
         $pendapatan = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))
             ->whereBetween("waktu_transaksi", [$startDate, $endDate])
             ->select(
-                DB::raw("DATE_FORMAT(waktu_transaksi, '$format') as periode"),
+                DB::raw("$group as periode"),
                 DB::raw("SUM(total_harga) as total_pendapatan")
             )
             ->groupBy("periode")
             ->orderBy("periode", "asc")
             ->get();
-    
+        
+        // Berat
         $berat = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))
             ->whereBetween("waktu_transaksi", [$startDate, $endDate])
             ->join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
             ->select(
-                DB::raw("DATE_FORMAT(waktu_transaksi, '$format') as periode"),
+                DB::raw("$group as periode"),
                 DB::raw("SUM(detail_transaksi.berat) as total_berat")
             )
             ->groupBy("periode")
             ->orderBy("periode", "asc")
             ->get();
+        
     
         return response()->json([
             "status" => true,
