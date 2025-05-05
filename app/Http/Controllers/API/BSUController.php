@@ -95,17 +95,15 @@ class BSUController extends Controller
             ->groupBy("tanggal")
             ->orderBy("tanggal", "asc")
             ->get();
-        $berat = DetailTransaksi::join("transaksi", "
-            detail_transaksi.transaksi_id", "=", "transaksi.id")
-            ->where("transaksi.bank_sampah_unit_id", $request->get("bsu_id"))
-            ->whereBetween("transaksi.waktu_transaksi", [$startDate, $endDate])
-            ->select(
-                DB::raw("DATE(transaksi.waktu_transaksi) as tanggal"),
-                DB::raw("SUM(detail_transaksi.berat) as total_berat")
-            )
-            ->groupBy("tanggal")
-            ->orderBy("tanggal", "asc")
-            ->get();
+        $berat = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))
+        ->where("waktu_transaksi", ">=", $startDate)
+        ->where("waktu_transaksi", "<=", $endDate)
+        ->join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
+        ->where("bank_sampah_unit_id", $request->get("bsu_id"))
+        ->sum("detail_transaksi.berat")
+        ->groupBy("tanggal")
+        ->orderBy("tanggal", "asc")
+        ->get();
         $sampah = Sampah::where("bank_sampah_unit_id", $request->get("bsu_id"));
         if($sampah->exists())
         {
