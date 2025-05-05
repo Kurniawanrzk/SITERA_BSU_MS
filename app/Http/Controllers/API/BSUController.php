@@ -68,58 +68,56 @@ class BSUController extends Controller
     public function cekTrenPengumpulanSampah(Request $request)
     {
         $jenjang = $request->get("jenjang");
-
-        if($jenjang == "harian")
-        {
+    
+        if ($jenjang == "harian") {
+            $format = "%Y-%m-%d";
             $startDate = Carbon::now()->startOfDay();
             $endDate = Carbon::now()->endOfDay();
-        } elseif($jenjang == "mingguan") {
+        } elseif ($jenjang == "mingguan") {
+            $format = "%Y-%m-%d";
             $startDate = Carbon::now()->startOfWeek();
             $endDate = Carbon::now()->endOfWeek();
-        } elseif($jenjang == "bulanan") {
-            $startDate = Carbon::now()->startOfMonth();
-            $endDate = Carbon::now()->endOfMonth();
+        } elseif ($jenjang == "bulanan") {
+            $format = "%Y-%m";
+            $startDate = Carbon::now()->startOfYear();
+            $endDate = Carbon::now()->endOfYear();
         } else {
             return response()->json([
                 "status" => false,
                 "message" => "Invalid jenjang parameter."
             ], 400);
         }
-
+    
         $pendapatan = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))
             ->whereBetween("waktu_transaksi", [$startDate, $endDate])
             ->select(
-                DB::raw("DATE(waktu_transaksi) as tanggal"),
+                DB::raw("DATE_FORMAT(waktu_transaksi, '$format') as periode"),
                 DB::raw("SUM(total_harga) as total_pendapatan")
             )
-            ->groupBy("tanggal")
-            ->orderBy("tanggal", "asc")
+            ->groupBy("periode")
+            ->orderBy("periode", "asc")
             ->get();
+    
         $berat = Transaksi::where("bank_sampah_unit_id", $request->get("bsu_id"))
-        ->where("waktu_transaksi", ">=", $startDate)
-        ->where("waktu_transaksi", "<=", $endDate)
-        ->join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
-        ->where("bank_sampah_unit_id", $request->get("bsu_id"))
-        ->sum("detail_transaksi.berat")
-        ->groupBy("tanggal")
-        ->orderBy("tanggal", "asc")
-        ->get();
-        $sampah = Sampah::where("bank_sampah_unit_id", $request->get("bsu_id"));
-        if($sampah->exists())
-        {
-            $sampah = $sampah->get();
-        } else {
-            $sampah = [];
-        }
+            ->whereBetween("waktu_transaksi", [$startDate, $endDate])
+            ->join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
+            ->select(
+                DB::raw("DATE_FORMAT(waktu_transaksi, '$format') as periode"),
+                DB::raw("SUM(detail_transaksi.berat) as total_berat")
+            )
+            ->groupBy("periode")
+            ->orderBy("periode", "asc")
+            ->get();
+    
         return response()->json([
             "status" => true,
             "data" => [
                 "pendapatan" => $pendapatan,
-                "berat" => $berat,
-                "sampah" => $sampah
+                "berat" => $berat
             ]
-        ], 200);
+        ]);
     }
+    
 
     public function cekBSUBerdasarkanNoRegis(Request $request, $id)
     {
