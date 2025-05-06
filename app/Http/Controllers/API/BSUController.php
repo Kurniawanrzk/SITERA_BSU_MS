@@ -70,19 +70,21 @@ class BSUController extends Controller
         $jenjang = $request->get("jenjang");
         $bsu_id = $request->get("bsu_id");
     
+        $currentYear = Carbon::now()->year;
+        
         if ($jenjang == "harian") {
             $startDate = Carbon::now()->startOfDay();
             $endDate = Carbon::now()->endOfDay();
             $group = "DATE(waktu_transaksi)";
             $format = "d M"; // Format: 01 Jan
-        } elseif ($jenjang == "mingguan") {
-            $startDate = Carbon::now()->startOfWeek();
+        } else    if ($jenjang == "mingguan") {
+            $startDate = Carbon::now()->startOfMonth()->startOfWeek(); // Awal minggu dari bulan ini
             $endDate = Carbon::now()->endOfWeek();
             $group = "YEARWEEK(waktu_transaksi, 1)";
             $format = "W"; // Format: Week number
         } elseif ($jenjang == "bulanan") {
-            $startDate = Carbon::now()->startOfYear();
-            $endDate = Carbon::now()->endOfYear();
+            $startDate = Carbon::createFromDate($currentYear, 1, 1)->startOfDay(); // Awal tahun ini
+            $endDate = Carbon::now()->endOfMonth(); // Akhir bulan saat ini
             $group = "MONTH(waktu_transaksi)";
             $format = "n"; // Just month number (1-12)
         }
@@ -114,10 +116,12 @@ class BSUController extends Controller
         $trendData = [];
         
         if ($jenjang == "bulanan") {
-            // Inisialisasi array dengan 12 bulan
+            // Inisialisasi array dengan bulan dari awal tahun sampai bulan sekarang
             $namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            $bulanSekarang = (int)Carbon::now()->format('n'); // Mendapatkan bulan saat ini (1-12)
             
-            for ($i = 1; $i <= 12; $i++) {
+            // Inisialisasi data untuk bulan dari Januari sampai bulan saat ini
+            for ($i = 1; $i <= $bulanSekarang; $i++) {
                 $trendData[$i] = [
                     "bulan" => $namaBulan[$i-1],
                     "sampah" => 0,
@@ -143,9 +147,8 @@ class BSUController extends Controller
             
             // Ubah dari associative array menjadi sequential array
             $trendData = array_values($trendData);
-        } else {
-            // Untuk jenjang harian dan mingguan
-            // Gabungkan data pendapatan dan berat
+        } else if ($jenjang == "harian") {
+            // Untuk jenjang harian, kita cukup tampilkan data hari ini saja
             $periodeData = [];
             
             foreach ($pendapatan as $item) {
@@ -164,13 +167,37 @@ class BSUController extends Controller
             
             // Format label periode sesuai jenjang
             foreach ($periodeData as $periode => $data) {
-                if ($jenjang == "harian") {
-                    $label = Carbon::createFromFormat('Y-m-d', $periode)->format('d M');
-                } else { // mingguan
-                    $tahun = substr($periode, 0, 4);
-                    $minggu = substr($periode, 4);
-                    $label = "Minggu " . $minggu;
+                $label = Carbon::createFromFormat('Y-m-d', $periode)->format('d M');
+                
+                $trendData[] = [
+                    "bulan" => $label, // Tetap menggunakan key "bulan" untuk konsistensi 
+                    "sampah" => $data['sampah'],
+                    "pendapatan" => $data['pendapatan']
+                ];
+            }
+        } else if ($jenjang == "mingguan") {
+            // Untuk jenjang mingguan, tampilkan minggu-minggu dalam bulan ini
+            $periodeData = [];
+            
+            foreach ($pendapatan as $item) {
+                $periodeData[$item->periode]['pendapatan'] = (int)$item->total_pendapatan;
+                if (!isset($periodeData[$item->periode]['sampah'])) {
+                    $periodeData[$item->periode]['sampah'] = 0;
                 }
+            }
+            
+            foreach ($berat as $item) {
+                $periodeData[$item->periode]['sampah'] = (int)$item->total_berat;
+                if (!isset($periodeData[$item->periode]['pendapatan'])) {
+                    $periodeData[$item->periode]['pendapatan'] = 0;
+                }
+            }
+            
+            // Format label periode sesuai jenjang
+            foreach ($periodeData as $periode => $data) {
+                $tahun = substr($periode, 0, 4);
+                $minggu = substr($periode, 4);
+                $label = "Minggu " . $minggu;
                 
                 $trendData[] = [
                     "bulan" => $label, // Tetap menggunakan key "bulan" untuk konsistensi
