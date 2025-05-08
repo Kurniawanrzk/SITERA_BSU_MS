@@ -138,11 +138,14 @@ class BSUController extends Controller
         
         // Panggil nasabah_ms API untuk mendapatkan detail nasabah
         try {
-            $response = Http::get('http://145.79.10.111:8004/api/v1/nasabah/batch', [
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $request->header('Authorization'),
+            ])->get('http://145.79.10.111:8004/api/v1/nasabah/batch', [
                 'nik_list' => implode(',', $nikList)
             ]);
             
-            $nasabahData = $response->json();
+            $nasabahData = $response->json()['data'];
             return $nasabahData;
             // Gabungkan data transaksi dengan data nasabah
             $result = $topContributors->map(function ($contributor) use ($nasabahData) {
