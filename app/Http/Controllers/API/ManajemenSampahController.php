@@ -179,6 +179,10 @@ class ManajemenSampahController extends Controller
                         "reward_level" => "gold"
                     ]);
                 } 
+
+                BankSampahUnit::where("id", $bsu->id)->update([
+                    "total_sampah" => $this->getTotalKGSampahTransaksi($bsu->id)
+                ]);
             
                 DB::commit();
                 return response()->json(['message' => 'Transaksi berhasil disimpan', 'transaksi_id' => $transaksi->id], 201);
