@@ -34,6 +34,7 @@ Route::middleware('checkIfBsu')->group(function(){
     Route::get("v1/bsu/cek-data-utama-bsu", [BSUController::class, "cekDataUtamaBSU"]);
     Route::get("v1/bsu/cek-tren-pengumpulan-sampah", [BSUController::class, "cekTrenPengumpulanSampah"]);
     Route::get("v1/bsu/presentasi-sampah", [BSUController::class, "distribusiJenisSampah"]);
+    Route::get("v1/bsu/cek-kontribusi-terbaik", [BSUController::class, "getTopContributors"]);
 });
 
 Route::middleware("checkifnasabah")->group(function(){

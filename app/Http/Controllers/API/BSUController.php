@@ -104,6 +104,75 @@ class BSUController extends Controller
         ]);
 
     }
+
+    public function getTopContributors(Request $request, $bsuId)
+    {
+        // Mendapatkan awal dan akhir bulan sekarang
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+        
+        // Mengambil data transaksi untuk BSU tertentu pada bulan ini
+        $topContributors = Transaksi::where('bank_sampah_unit_id', $bsuId)
+            ->whereBetween('waktu_transaksi', [$startOfMonth, $endOfMonth])
+            ->select('nik')
+            ->selectRaw('SUM(total_harga) as total_kontribusi')
+            ->selectRaw('COUNT(*) as jumlah_transaksi')
+            ->selectRaw('SUM((SELECT SUM(berat) FROM detail_transaksi WHERE transaksi_id = transaksi.id)) as total_berat')
+            ->groupBy('nik')
+            ->orderBy('total_kontribusi', 'desc')
+            ->take(10) // Ambil 10 kontributor terbaik
+            ->get();
+        
+        if ($topContributors->isEmpty()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tidak ada data kontributor untuk bulan ini',
+                'data' => []
+            ]);
+        }
+        
+        // Kumpulkan semua NIK untuk request ke service nasabah
+        $nikList = $topContributors->pluck('nik')->toArray();
+        
+        // Panggil nasabah_ms API untuk mendapatkan detail nasabah
+        try {
+            $response = Http::get(env('NASABAH_SERVICE_URL') . '/api/nasabah/batch', [
+                'nik_list' => implode(',', $nikList)
+            ]);
+            
+            $nasabahData = $response->json()['data'] ?? [];
+            
+            // Gabungkan data transaksi dengan data nasabah
+            $result = $topContributors->map(function ($contributor) use ($nasabahData) {
+                $nasabah = collect($nasabahData)->firstWhere('nik', $contributor->nik);
+                
+                return [
+                    'nik' => $contributor->nik,
+                    'nama' => $nasabah['nama'] ?? 'Nama tidak tersedia',
+                    'total_kontribusi' => $contributor->total_kontribusi,
+                    'jumlah_transaksi' => $contributor->jumlah_transaksi,
+                    'total_berat' => $contributor->total_berat,
+                    'nomor_wa' => $nasabah['nomor_wa'] ?? 'Tidak tersedia',
+                    'reward_level' => $nasabah['reward_level'] ?? 'Tidak tersedia'
+                ];
+            });
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data kontributor terbaik bulan ini berhasil diambil',
+                'data' => $result
+            ]);
+            
+        } catch (\Exception $e) {
+            // Jika gagal mengambil data nasabah, kembalikan hanya data transaksi
+            return response()->json([
+                'status' => 'partial_success',
+                'message' => 'Data kontributor berhasil diambil tanpa detail nasabah',
+                'error_detail' => $e->getMessage(),
+                'data' => $topContributors
+            ], 206);
+        }
+    }
     public function cekTrenPengumpulanSampah(Request $request)
     {
         $jenjang = $request->get("jenjang");
