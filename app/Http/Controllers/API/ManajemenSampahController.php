@@ -128,6 +128,7 @@ class ManajemenSampahController extends Controller
 
             $nasabah = $nasabah['data']['user_nasabah'];
             $total_sampah = 0;
+            $poinTemp = 0;
 
             DB::beginTransaction();
             try {
@@ -144,24 +145,30 @@ class ManajemenSampahController extends Controller
                     if (!$sampah) {
                         throw new \Exception("Sampah dengan ID {$item['id']} tidak ditemukan");
                     }
-                    $total_sampah += $item['berat'];
-                    $subtotal = $item['berat'] * $sampah->harga_satuan;
+                    $berat = $item['berat'];
+                    $total_sampah += $berat;
+                    $subtotal = $berat * $sampah->harga_satuan;
                     $totalHarga += $subtotal;
-    
+                
+                    // Hitung poin: 1 kg = 10 poin
+                    $poin = floor($berat * 10); // bulatkan ke bawah jika desimal
+                    $poinTemp += $poin;
+                
                     DetailTransaksi::create([
                         'transaksi_id' => $transaksi->id,
                         'sampah_id' => $sampah->id,
-                        'berat' => $item['berat'],
+                        'berat' => $berat,
                         'harga_satuan' => $sampah->harga_satuan,
                         'subtotal' => $subtotal,
                         'is_cocacola' => $request->is_cocacola
                     ]);
                 }
+                
     
                 // Update total harga transaksi
                 $transaksi->update(['total_harga' => $totalHarga]);
                 $this->isiSaldoNasabah($nasabah['nik'], $totalHarga, $total_sampah,$request->get("token"));
-                
+                $this->tambahPoin($poinTemp, $token, $nasabah['nik']);
                 DB::commit();
 
                
@@ -170,6 +177,39 @@ class ManajemenSampahController extends Controller
                 DB::rollBack();
                 return response()->json(['message' => 'Transaksi gagal disimpan: ' . $e->getMessage()], 500);
             }
+    }
+
+    private function tambahPoin($poin, $token, $nik)
+    {
+        $client = new Client([
+            'timeout' => 5, // Timeout 5 detik untuk menghindari request yang terlalu lama
+        ]);
+
+        $response = $client->request("PUT", "http://145.79.10.111:8004/api/v1/nasabah/isi-poin", [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => $token,
+            ],
+            'json' => [
+                "nik" => $nik,
+                "poin" => $poin
+            ]
+        ]);
+        $response = json_decode($response->getBody());
+        if($response->status == true){
+            return response()
+            ->json([
+                "status" => true,
+                "message" => "Poin berhasil ditambahkan"
+            ], 200);
+        } else {
+            return response()
+            ->json([
+                "status" => false,
+                "message" => "Poin gagal ditambahkan"
+            ], 400);
+        }
     }
 
     public function isiSaldoNasabah($nik, $saldo, $total_sampah,$token)
