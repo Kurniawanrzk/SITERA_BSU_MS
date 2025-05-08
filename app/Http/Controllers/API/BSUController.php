@@ -69,35 +69,38 @@ class BSUController extends Controller
     {
         $bsuId = $request->get("bsu_id");
      
-            $distribusiPresentaseSampah = DB::select(
-                "SELECT 
-                    s.tipe AS tipe_sampah,
-                    SUM(dt.berat) AS total_berat,
-                    ROUND((SUM(dt.berat) / (
-                        SELECT SUM(dt2.berat) 
-                        FROM detail_transaksi dt2
-                        JOIN transaksi t2 ON dt2.transaksi_id = t2.id
-                        JOIN sampah s2 ON dt2.sampah_id = s2.id
-                        WHERE t2.bank_sampah_unit_id = :bank_sampah_unit_id
-                    )) * 100, 2) AS persentase
-                FROM 
-                    detail_transaksi dt
-                JOIN 
-                    transaksi t ON dt.transaksi_id = t.id
-                JOIN 
-                    sampah s ON dt.sampah_id = s.id
-                WHERE 
-                    t.bank_sampah_unit_id = :bank_sampah_unit_id
-                GROUP BY 
-                    s.tipe
-                ORDER BY 
-                    total_berat DESC",
-                ['bank_sampah_unit_id' => $bsuId]
-            );
+        $result = DB::select(
+            "SELECT 
+                s.tipe AS tipe_sampah,
+                SUM(dt.berat) AS total_berat,
+                ROUND((SUM(dt.berat) / (
+                    SELECT SUM(dt2.berat) 
+                    FROM detail_transaksi dt2
+                    JOIN transaksi t2 ON dt2.transaksi_id = t2.id
+                    JOIN sampah s2 ON dt2.sampah_id = s2.id
+                    WHERE t2.bank_sampah_unit_id = :bsu_id_sub
+                )) * 100, 2) AS persentase
+            FROM 
+                detail_transaksi dt
+            JOIN 
+                transaksi t ON dt.transaksi_id = t.id
+            JOIN 
+                sampah s ON dt.sampah_id = s.id
+            WHERE 
+                t.bank_sampah_unit_id = :bsu_id_main
+            GROUP BY 
+                s.tipe
+            ORDER BY 
+                total_berat DESC",
+            [
+                'bsu_id_main' => $bsuId,
+                'bsu_id_sub' => $bsuId
+            ]
+        );
         
 
         return response()->json([
-            "1" => $distribusiPresentaseSampah,
+            "1" => $result,
         ]);
 
     }
