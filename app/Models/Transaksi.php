@@ -20,6 +20,7 @@ class Transaksi extends Model
         'total_harga',
         'bank_sampah_unit_id',
         'waktu_transaksi',
+        'poin'
     ];
 
     /**
