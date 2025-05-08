@@ -69,7 +69,7 @@ class BSUController extends Controller
     {
         $bsu_id = $request->get("bsu_id");
      
-            $berat = DetailTransaksi::with("sampah.tipe")->where("sampah_id", $item->id);
+            $berat = DetailTransaksi::with("sampah.tipe");
 
         return $berat;
 
