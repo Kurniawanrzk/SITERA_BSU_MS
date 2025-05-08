@@ -366,10 +366,18 @@ class BSUController extends Controller
 
     public function cekProfileBsu(Request $request)
     {
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Authorization' => $request->header('Authorization'),
+        ])->get('http://145.79.10.111:8002/api/v1/auth/profile');
+        $response = json_decode($response->getBody(), true);
+        $user = $response['data']['user'];
+
         return response()->json([
             "status" => true,
             "data" => [
                     "bsu" => BankSampahUnit::find($request->get("bsu_id")),
+                    "user" => $user,
             ]
         ], 200);
     }
