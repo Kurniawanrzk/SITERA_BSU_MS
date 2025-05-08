@@ -65,6 +65,15 @@ class BSUController extends Controller
         ], 200);
     }
 
+    public function distribusiJenisSampah(Request $request)
+    {
+        $bsu_id = $request->get("bsu_id");
+     
+            $berat = DetailTransaksi::with("sampah.tipe")->where("sampah_id", $item->id);
+
+        return $berat;
+
+    }
     public function cekTrenPengumpulanSampah(Request $request)
     {
         $jenjang = $request->get("jenjang");
