@@ -98,14 +98,15 @@ class ManajemenSampahController extends Controller
     public function cekSemuaTransaksiBSU(Request $request)
     {
         $token = $request->get("token");
-        $transaksi = Transaksi::with('detailTransaksi.sampah')->get();
-
-        return response()
-        ->json([
+        $perPage = $request->get('per_page', 10); // default 10 data per halaman
+        $transaksi = Transaksi::with('detailTransaksi.sampah')->paginate($perPage);
+    
+        return response()->json([
             "status" => true,
             "data" => $transaksi
         ]);
     }
+    
 
     public function transaksiSampahBSUNasabah(Request $request)
     {
