@@ -69,9 +69,9 @@ class BSUController extends Controller
     {
         $bsu_id = $request->get("bsu_id");
      
-            $distribusiPresentaseSampah = Transaksi::where("bank_sampah_unit_id", $bsu_id)
-            ->join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
-            ->join("sampah", "detail_transaksi.sampah_id", "=", "sampah.id")->get();
+            $distribusiPresentaseSampah = Transaksi::join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
+            ->join("sampah", "detail_transaksi.sampah_id", "=", "sampah.id")
+            ->where("bank_sampah_unit_id", $bsu_id)->get();
         
 
         return response()->json([
