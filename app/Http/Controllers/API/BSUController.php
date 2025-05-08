@@ -101,7 +101,8 @@ class BSUController extends Controller
         
 
         return response()->json([
-            "1" => $result,
+            "status" => true,
+            "data" => $result,
         ]);
 
     }
