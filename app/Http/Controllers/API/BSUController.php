@@ -379,6 +379,8 @@ class BSUController extends Controller
         $edit_bsu = BankSampahUnit::find($request->get("bsu_id"));
         $token = $request->get("token");
         $apiResponse = "";
+
+        return response()->json($request->all());
         // Handle email and password updates if provided
         if($request->has('email') || $request->has('password')) {
             try {
@@ -465,7 +467,7 @@ class BSUController extends Controller
             'kecamatan', 'longitude', 'latitude', 'tanggal_berdiri', 
             'nama_pengurus', 'jumlah_nasabah', 'nomor_telepon', 
             'reward_level', 'total_sampah', "nama_bsu", 'nama_pengurus', 'no_reg',
-            
+
         ];
     
         foreach ($updateableFields as $field) {
