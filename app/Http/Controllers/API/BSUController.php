@@ -69,9 +69,12 @@ class BSUController extends Controller
     {
         $bsu_id = $request->get("bsu_id");
      
-            $berat = DetailTransaksi::with("sampah.tipe");
+            $distribusiPresentaseSampah = Transaksi::where("bank_sampah_unit_id", $bsu_id)
+            ->join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
+            ->join("sampah", "detail_transaksi.sampah_id", "=", "sampah.id");
+        
 
-        return response()->json($berat);
+        return response()->json($distribusiPresentaseSampah);
 
     }
     public function cekTrenPengumpulanSampah(Request $request)
