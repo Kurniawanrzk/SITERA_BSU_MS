@@ -46,6 +46,6 @@ Route::prefix('v1/bsu')->group(function () {
     });
 
     Route::middleware("checkifpemerintah")->group(function () {
-        Route::get("/cek-semua-transaksi-bsu", [ManajemenSampahController::class, "cekSemuaTransaksiBSU"]);  
+        Route::get('/cek-semua-transaksi-bsu', [ManajemenSampahController::class, "cekTransaksiNasabahBsuId"]); 
     });
 });
