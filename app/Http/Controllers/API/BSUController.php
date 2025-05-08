@@ -142,7 +142,7 @@ class BSUController extends Controller
                 'nik_list' => implode(',', $nikList)
             ]);
             
-            $nasabahData = $response->json()['data'] ?? [];
+            $nasabahData = $response->json()['data'];
             return $nasabahData;
             // Gabungkan data transaksi dengan data nasabah
             $result = $topContributors->map(function ($contributor) use ($nasabahData) {
