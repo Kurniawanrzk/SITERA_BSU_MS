@@ -160,6 +160,7 @@ class ManajemenSampahController extends Controller
                         'berat' => $berat,
                         'harga_satuan' => $sampah->harga_satuan,
                         'subtotal' => $subtotal,
+                        'poin' => $poin,
                         'is_cocacola' => $request->is_cocacola
                     ]);
                 }
