@@ -380,7 +380,6 @@ class BSUController extends Controller
         $token = $request->get("token");
         $apiResponse = "";
 
-        return response()->json($request->all());
         // Handle email and password updates if provided
         if($request->has('email') || $request->has('password')) {
             try {
