@@ -105,8 +105,9 @@ class BSUController extends Controller
 
     }
 
-    public function getTopContributors(Request $request, $bsuId)
+    public function getTopContributors(Request $request)
     {
+        $bsuId = $request->get('bsu_id');
         // Mendapatkan awal dan akhir bulan sekarang
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
