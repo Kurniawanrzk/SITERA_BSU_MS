@@ -141,6 +141,7 @@ class ManajemenSampahController extends Controller
             $nasabah = $nasabah['data']['user_nasabah'];
             $total_sampah = 0;
             $poinTemp = 0;
+            $inventoryUpdates = [];
 
             DB::beginTransaction();
             try {
@@ -175,7 +176,18 @@ class ManajemenSampahController extends Controller
                         'poin' => $poin,
                         'is_cocacola' => $request->is_cocacola
                     ]);
+                    $inventoryUpdates[] = [
+                        'bank_sampah_unit_id' => $bsu->id,
+                        'sampah_id' => $item['id'],
+                        'berat_available' => DB::raw("COALESCE(berat_available, 0) + {$item['berat']}")
+                    ];
                 }
+
+                App\Models\Inventories::upsert(
+                    $inventoryUpdates,
+                    ['bank_sampah_unit_id', 'sampah_id'],
+                    ['berat_available' => DB::raw('inventories.berat_available + VALUES(berat_available)')]
+                );
                 
     
                 // Update total harga transaksi
