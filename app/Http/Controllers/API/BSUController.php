@@ -67,11 +67,33 @@ class BSUController extends Controller
 
     public function distribusiJenisSampah(Request $request)
     {
-        $bsu_id = $request->get("bsu_id");
+        $bsuId = $request->get("bsu_id");
      
-            $distribusiPresentaseSampah = Transaksi::join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
-            ->join("sampah", "detail_transaksi.sampah_id", "=", "sampah.id")
-            ->where("bank_sampah_unit_id", $bsu_id)->get();
+            $distribusiPresentaseSampah = DB::select(
+                "SELECT 
+                    s.tipe AS tipe_sampah,
+                    SUM(dt.berat) AS total_berat,
+                    ROUND((SUM(dt.berat) / (
+                        SELECT SUM(dt2.berat) 
+                        FROM detail_transaksi dt2
+                        JOIN transaksi t2 ON dt2.transaksi_id = t2.id
+                        JOIN sampah s2 ON dt2.sampah_id = s2.id
+                        WHERE t2.bank_sampah_unit_id = :bank_sampah_unit_id
+                    )) * 100, 2) AS persentase
+                FROM 
+                    detail_transaksi dt
+                JOIN 
+                    transaksi t ON dt.transaksi_id = t.id
+                JOIN 
+                    sampah s ON dt.sampah_id = s.id
+                WHERE 
+                    t.bank_sampah_unit_id = :bank_sampah_unit_id
+                GROUP BY 
+                    s.tipe
+                ORDER BY 
+                    total_berat DESC",
+                ['bank_sampah_unit_id' => $bsuId]
+            );
         
 
         return response()->json([
