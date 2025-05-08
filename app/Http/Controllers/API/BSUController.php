@@ -138,7 +138,7 @@ class BSUController extends Controller
         
         // Panggil nasabah_ms API untuk mendapatkan detail nasabah
         try {
-            $response = Http::get(env('NASABAH_SERVICE_URL') . '/api/nasabah/batch', [
+            $response = Http::get('http://145.79.10.111:8004/api/v1/nasabah/batch', [
                 'nik_list' => implode(',', $nikList)
             ]);
             
