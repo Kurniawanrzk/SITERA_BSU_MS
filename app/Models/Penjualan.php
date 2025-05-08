@@ -14,7 +14,6 @@ class Penjualan extends Model
     public $incrementing = false;
     protected $keyType = 'string'; 
     protected $fillable = [
-        'id',
         'id_perusahaan',
         "bank_sampah_unit_id",
         "total_harga",

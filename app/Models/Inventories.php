@@ -14,7 +14,6 @@ class Inventories extends Model
     public $incrementing = false;
     protected $keyType = 'string'; 
     protected $fillable = [
-        'id',
         'bank_sampah_unit_id',
         "sampah_id",
         "berat_available",

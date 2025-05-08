@@ -14,7 +14,6 @@ class DetailPenjualan extends Model
     public $incrementing = false;
     protected $keyType = 'string'; 
     protected $fillable = [
-        'id',
         'id_penjualan',
         "sampah_id",
         "berat",
