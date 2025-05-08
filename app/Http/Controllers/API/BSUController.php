@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\{BankSampahUnit, DetailTransaksi, Transaksi, Sampah};
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Exception\RequestException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
