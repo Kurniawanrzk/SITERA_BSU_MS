@@ -186,11 +186,11 @@ class ManajemenSampahController extends Controller
                 ]);
 
                 if($poinNasabah->total_poin >= 500) {
-                    $this->ubahReward($nasabah['nik'], "gold");
+                    $this->ubahReward($nasabah['nik'], "gold", $token);
                 } else if($poinNasabah->total_poin >= 200) {
-                    $this->ubahReward($nasabah['nik'], "silver");
+                    $this->ubahReward($nasabah['nik'], "silver", $token);
                 } else {
-                    $this->ubahReward($nasabah['nik'], "bronze");
+                    $this->ubahReward($nasabah['nik'], "bronze", $token);
                 }
             
                 DB::commit();
