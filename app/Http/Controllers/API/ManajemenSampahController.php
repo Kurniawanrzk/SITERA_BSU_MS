@@ -161,7 +161,10 @@ class ManajemenSampahController extends Controller
                 // Update total harga transaksi
                 $transaksi->update(['total_harga' => $totalHarga]);
                 $this->isiSaldoNasabah($nasabah['nik'], $totalHarga, $total_sampah,$request->get("token"));
+                
                 DB::commit();
+
+               
                 return response()->json(['message' => 'Transaksi berhasil disimpan', 'transaksi_id' => $transaksi->id], 201);
             } catch (\Exception $e) {
                 DB::rollBack();

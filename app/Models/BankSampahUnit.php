@@ -42,11 +42,7 @@ class BankSampahUnit extends Model
     ];
 
     protected $hidden = [
-        "nomor_registrasi",
-        "user_id",
-        "nama_pengurus",
-        "created_at",
-        "updated_at"
+
     ];
 
     public function transaksiNasabah()

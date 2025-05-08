@@ -464,7 +464,8 @@ class BSUController extends Controller
             'kategori', 'alamat', 'jalan_dusun', 'rt', 'rw', 'desa', 
             'kecamatan', 'longitude', 'latitude', 'tanggal_berdiri', 
             'nama_pengurus', 'jumlah_nasabah', 'nomor_telepon', 
-            'reward_level', 'total_sampah', "nama_bsu"
+            'reward_level', 'total_sampah', "nama_bsu", 'nama_pengurus', 'no_reg',
+            
         ];
     
         foreach ($updateableFields as $field) {
