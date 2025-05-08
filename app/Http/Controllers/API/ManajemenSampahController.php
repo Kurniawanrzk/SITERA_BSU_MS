@@ -169,14 +169,36 @@ class ManajemenSampahController extends Controller
                 $transaksi->update(['total_harga' => $totalHarga]);
                 $this->isiSaldoNasabah($nasabah['nik'], $totalHarga, $total_sampah,$request->get("token"));
                 $this->tambahPoin($poinTemp, $token, $nasabah['nik']);
-                DB::commit();
 
-               
+                if($this->getTotalKGSampahTransaksi($bsu->id) > 5001){ // silver
+                    BankSampahUnit::where("id", $bsu->id)->update([
+                        "reward_level" => "silver"
+                    ]);
+                } else if($this->getTotalKGSampahTransaksi($bsu->id) > 10001){ // gold
+                    BankSampahUnit::where("id", $bsu->id)->update([
+                        "reward_level" => "gold"
+                    ]);
+                } 
+            
+                DB::commit();
                 return response()->json(['message' => 'Transaksi berhasil disimpan', 'transaksi_id' => $transaksi->id], 201);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['message' => 'Transaksi gagal disimpan: ' . $e->getMessage()], 500);
             }
+    }
+
+    private function getTotalKGSampahTransaksi($bsu_id)
+    {
+        $total_berat = 0;
+        $transaksi = Transaksi::join("detail_transaksi", "transaksi.id", "=", "detail_transaksi.transaksi_id")
+        ->where("transaksi.bank_sampah_unit_id", "e78c7237-2d9a-427b-bdc1-c11e34369936")->get();
+        foreach ($transaksi as $item) {
+            $total_berat = $total_berat+ $item->berat;
+        }
+        return $total_berat;
+
+    
     }
 
     private function tambahPoin($poin, $token, $nik)
