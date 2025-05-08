@@ -212,7 +212,7 @@ class ManajemenSampahController extends Controller
         return $total_berat;
     }
 
-    private function ubahReward($nik, $reward_level)
+    private function ubahReward($nik, $reward_level, $token)
     {
         $client = new Client([
             'timeout' => 5, // Timeout 5 detik untuk menghindari request yang terlalu lama
@@ -222,6 +222,7 @@ class ManajemenSampahController extends Controller
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
+                'Authorization' => $token,
             ],
             'json' => [
                 "nik" => $nik,
