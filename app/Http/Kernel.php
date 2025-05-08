@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'checkIfBsu' => \App\Http\Middleware\checkifBSU::class,
         'checkIfUser' => \App\Http\Middleware\checkIfRealUser::class,
         'checkifnasabah' =>  \App\Http\Middleware\checkifnasabah::class,
+        'checkifpemerintah' =>  \App\Http\Middleware\checkifpemerintah::class,
     ];
 }

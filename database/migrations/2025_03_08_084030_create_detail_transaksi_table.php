@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal("harga_satuan", 10, 2);
             $table->decimal("subtotal", 10, 2);
             $table->integer("is_cocacola", 1)->default(0);
+            $table->integer("poin");
             $table->timestamps();
         });
     }

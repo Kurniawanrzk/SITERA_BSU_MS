@@ -95,7 +95,19 @@ class ManajemenSampahController extends Controller
         ], 200);
     }
 
-    public function  transaksiSampahBSUNasabah(Request $request)
+    public function cekSemuaTransaksiBSU(Request $request)
+    {
+        $token = $request->get("token");
+        $transaksi = Transaksi::with('detailTransaksi.sampah')->get();
+
+        return response()
+        ->json([
+            "status" => true,
+            "data" => $transaksi
+        ]);
+    }
+
+    public function transaksiSampahBSUNasabah(Request $request)
     {
             $token = $request->get("token");
             $bsu = BankSampahUnit::find($request->get("bsu_id"));

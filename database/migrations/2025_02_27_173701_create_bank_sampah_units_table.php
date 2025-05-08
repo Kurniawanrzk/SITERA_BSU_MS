@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('rw')->nullable();
             $table->string('desa')->nullable();
             $table->string('kecamatan')->nullable();
-            $table->decimal('longitude', 11, 8)->nullable();
-            $table->decimal('latitude', 10, 8)->nullable();
+            $table->string('longitude', 100)->nullable();
+            $table->string('latitude', 100)->nullable();
             $table->date('tanggal_berdiri')->nullable();
             $table->string('nama_pengurus')->nullable();
             $table->integer('jumlah_nasabah')->default(0)->nullable();
