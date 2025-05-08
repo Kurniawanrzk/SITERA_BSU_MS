@@ -185,9 +185,9 @@ class ManajemenSampahController extends Controller
                     "total_sampah" => $this->getTotalKGSampahTransaksi($bsu->id)
                 ]);
 
-                if($poinNasabah['total_poin'] >= 500) {
+                if($poinNasabah->total_poin >= 500) {
                     $this->ubahReward($nasabah['nik'], "gold");
-                } else if($poinNasabah['total_poin'] >= 200) {
+                } else if($poinNasabah->total_poin >= 200) {
                     $this->ubahReward($nasabah['nik'], "silver");
                 } else {
                     $this->ubahReward($nasabah['nik'], "bronze");
@@ -256,7 +256,7 @@ class ManajemenSampahController extends Controller
         ]);
         $response = json_decode($response->getBody());
         if($response->status == true){
-            return $response['data'];
+            return $response->data;
         } else {
           return false;
     }
