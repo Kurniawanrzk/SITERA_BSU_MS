@@ -143,7 +143,7 @@ class BSUController extends Controller
             ]);
             
             $nasabahData = $response->json()['data'] ?? [];
-            
+            return $nasabahData;
             // Gabungkan data transaksi dengan data nasabah
             $result = $topContributors->map(function ($contributor) use ($nasabahData) {
                 $nasabah = collect($nasabahData)->firstWhere('nik', $contributor->nik);
