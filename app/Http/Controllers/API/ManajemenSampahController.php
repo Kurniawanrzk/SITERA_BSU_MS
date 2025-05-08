@@ -183,7 +183,7 @@ class ManajemenSampahController extends Controller
                     ];
                 }
 
-                App\Models\Inventories::upsert(
+                \App\Models\Inventories::upsert(
                     $inventoryUpdates,
                     ['bank_sampah_unit_id', 'sampah_id'],
                     ['berat_available' => DB::raw('inventories.berat_available + VALUES(berat_available)')]
