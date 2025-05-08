@@ -168,7 +168,8 @@ class ManajemenSampahController extends Controller
                 // Update total harga transaksi
                 $transaksi->update(['total_harga' => $totalHarga]);
                 $this->isiSaldoNasabah($nasabah['nik'], $totalHarga, $total_sampah,$request->get("token"));
-                $this->tambahPoin($poinTemp, $token, $nasabah['nik']);
+                $poinNasabah = $this->tambahPoin($poinTemp, $token, $nasabah['nik']);
+
 
                 if($this->getTotalKGSampahTransaksi($bsu->id) > 5001){ // silver
                     BankSampahUnit::where("id", $bsu->id)->update([
@@ -183,6 +184,14 @@ class ManajemenSampahController extends Controller
                 BankSampahUnit::where("id", $bsu->id)->update([
                     "total_sampah" => $this->getTotalKGSampahTransaksi($bsu->id)
                 ]);
+
+                if($poinNasabah['total_poin'] >= 500) {
+                    $this->ubahReward($nasabah['nik'], "gold");
+                } else if($poinNasabah['total_poin'] >= 200) {
+                    $this->ubahReward($nasabah['nik'], "silver");
+                } else {
+                    $this->ubahReward($nasabah['nik'], "bronze");
+                }
             
                 DB::commit();
                 return response()->json(['message' => 'Transaksi berhasil disimpan', 'transaksi_id' => $transaksi->id], 201);
@@ -201,8 +210,31 @@ class ManajemenSampahController extends Controller
             $total_berat = $total_berat+ $item->berat;
         }
         return $total_berat;
+    }
 
-    
+    private function ubahReward($nik, $reward_level)
+    {
+        $client = new Client([
+            'timeout' => 5, // Timeout 5 detik untuk menghindari request yang terlalu lama
+        ]);
+
+        $response = $client->request("PUT", "http://145.79.10.111:8004/api/v1/nasabah/ubah-reward-level", [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ],
+            'json' => [
+                "nik" => $nik,
+                "reward_level" => $reward_level
+            ]
+        ]);
+        $response = json_decode($response->getBody());
+        if($response->status == true){
+           return true;
+        } else {
+            return false;
+        }
+
     }
 
     private function tambahPoin($poin, $token, $nik)
@@ -224,19 +256,12 @@ class ManajemenSampahController extends Controller
         ]);
         $response = json_decode($response->getBody());
         if($response->status == true){
-            return response()
-            ->json([
-                "status" => true,
-                "message" => "Poin berhasil ditambahkan"
-            ], 200);
+            return $response['data'];
         } else {
-            return response()
-            ->json([
-                "status" => false,
-                "message" => "Poin gagal ditambahkan"
-            ], 400);
-        }
+          return false;
     }
+    }
+
 
     public function isiSaldoNasabah($nik, $saldo, $total_sampah,$token)
     {
