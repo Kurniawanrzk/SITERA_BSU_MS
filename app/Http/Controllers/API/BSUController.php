@@ -71,7 +71,7 @@ class BSUController extends Controller
      
             $berat = DetailTransaksi::with("sampah.tipe");
 
-        return $berat;
+        return response()->json($berat);
 
     }
     public function cekTrenPengumpulanSampah(Request $request)
