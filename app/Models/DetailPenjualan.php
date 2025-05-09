@@ -18,7 +18,7 @@ class DetailPenjualan extends Model
         "sampah_id",
         "berat",
         "harga_satuan",
-        "sub_total"
+        "subtotal"
     ];
 
     public $timestamps = false;
