@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\JsonResponse;
 
-class checkifpemerintah
+class checkifperusahaan
 {
     /**
      * HTTP Client instance
@@ -59,9 +59,9 @@ class checkifpemerintah
                 return $this->errorResponse("Token tidak valid", 401);
             }
             
-            // Token valid, cek apakah user adalah pemerintah
+            // Token valid, cek apakah user adalah perusahaan
             if (!isset($authData['data']['roles']['is_perusahaan']) || $authData['data']['roles']['is_perusahaan'] !== true) {
-                return $this->errorResponse("Akses ditolak. Anda bukan pengguna pemerintah.", 403);
+                return $this->errorResponse("Akses ditolak. Anda bukan pengguna perusahaan.", 403);
             }
             
             // Tambahkan user_id dan perusahaan_id ke request untuk digunakan di controller
