@@ -18,9 +18,9 @@ class Penjualan extends Model
         "bank_sampah_unit_id",
         "total_harga",
         "waktu_pejualan",
-        "status",
-        "updated_at",
-        "created_at"
-        
+        "status"
     ];
+
+    public $timestamps = false;
+
 }
