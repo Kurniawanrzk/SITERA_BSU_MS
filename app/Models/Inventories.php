@@ -17,6 +17,8 @@ class Inventories extends Model
         'bank_sampah_unit_id',
         "sampah_id",
         "berat_available",
+        "updated_at",
+        "created_at"
         
     ];
 }
