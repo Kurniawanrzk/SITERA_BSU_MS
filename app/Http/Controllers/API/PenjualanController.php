@@ -45,7 +45,6 @@ public function store(Request $request)
         'total_harga' => 0,
         'status' => 'pending'
     ]);
-    return response()->json($penjualan);
     // Hitung total
     $total = 0;
     foreach ($request->items as $item) {
