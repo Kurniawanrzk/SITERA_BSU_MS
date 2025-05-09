@@ -1,16 +1,15 @@
 <?php
-
 namespace App\Traits;
 
-use Illuminate\Support\Str;
+    use Illuminate\Support\Str;
 
-trait HasUuid
-{
-    protected static function bootHasUuid()
+    trait HasUuid
     {
-        static::creating(function ($model) {
-                $model->id = Str::uuid()->toString();
+        protected static function bootHasUuid()
+        {
+            static::creating(function ($model) {
+                    $model->id = Str::uuid()->toString();
 
-        });
+            });
+        }
     }
-}

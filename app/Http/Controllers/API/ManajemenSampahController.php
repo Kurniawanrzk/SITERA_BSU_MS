@@ -106,6 +106,7 @@ class ManajemenSampahController extends Controller
         ]);
     }
     
+    use Illuminate\Support\Str;
 
     public function transaksiSampahBSUNasabah(Request $request)
     {
@@ -177,6 +178,7 @@ class ManajemenSampahController extends Controller
                         'is_cocacola' => $request->is_cocacola
                     ]);
                     $inventoryUpdates[] = [
+                        'id' => Str::uuid()->toString(),
                         'bank_sampah_unit_id' => $bsu->id,
                         'sampah_id' => $item['id'],
                         'berat_available' => DB::raw("COALESCE(berat_available, 0) + {$item['berat']}")
