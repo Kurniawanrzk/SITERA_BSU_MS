@@ -18,9 +18,9 @@ class DetailPenjualan extends Model
         "sampah_id",
         "berat",
         "harga_satuan",
-        "sub_total",
-        "updated_at",
-        "created_at"
+        "sub_total"
     ];
+
+    public $timestamps = false;
 
 }
