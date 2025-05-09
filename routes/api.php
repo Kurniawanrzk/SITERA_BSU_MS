@@ -47,6 +47,11 @@ Route::prefix('v1/bsu')->group(function () {
 
     Route::middleware("checkifpemerintah")->group(function () {
         Route::get("/cek-semua-transaksi-bsu-pemerintah", [ManajemenSampahController::class, "cekSemuaTransaksiBSU"]); 
-         
+    });
+
+    Route::middleware("checkifperusahaan")->group(function() {
+        Route::post('/penjualan', [PenjualanController::class, 'store']);    
+        Route::get('/penjualan/{id}/token', [PaymentController::class, 'getSnapToken']);
+
     });
 });
