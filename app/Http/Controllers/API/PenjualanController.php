@@ -50,13 +50,13 @@ public function store(Request $request)
     $total = 0;
     foreach ($request->items as $item) {
         $sampah = Sampah::find($item['sampah_id']);
-        $subtotal = $item['berat'] * $sampah->harga;
+        $subtotal = $item['berat'] * $sampah->harga_satuan;
         
         DetailPenjualan::create([
             'penjualan_id' => $penjualan->id,
             'sampah_id' => $item['sampah_id'],
             'berat' => $item['berat'],
-            'harga_satuan' => $sampah->harga,
+            'harga_satuan' => $sampah->harga_satuan,
             'subtotal' => $subtotal
         ]);
         
