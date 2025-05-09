@@ -10,6 +10,13 @@ use Midtrans\Snap;
 
 class PaymentController extends Controller
 {
+    public function __construct()
+    {
+        Config::$serverKey =  "SB-Mid-client-R702zSdjpHHjOs1v";
+        Config::$isProduction = false;
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+    }
 public function getSnapToken($id)
 {
     $penjualan = Penjualan::findOrFail($id);
