@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\{
     BSUController,
     ManajemenSampahController,
-    PengajuanController
+    PengajuanController,
+    PenjualanController,
+    PaymentController
 };
 
 Route::prefix('v1/bsu')->group(function () {
