@@ -18,7 +18,9 @@ class DetailPenjualan extends Model
         "sampah_id",
         "berat",
         "harga_satuan",
-        "sub_total"
+        "sub_total",
+        "updated_at",
+        "created_at"
     ];
 
 }
