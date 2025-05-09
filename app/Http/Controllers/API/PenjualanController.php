@@ -8,6 +8,7 @@ use App\Models\{
     Penjualan,
     DetailPenjualan,
     Sampah,
+    Inventories
     
 };
 class PenjualanController extends Controller
@@ -26,7 +27,7 @@ public function store(Request $request)
 
     // Cek stok
     foreach ($request->items as $item) {
-        $inventory = Inventory::where('bank_sampah_unit_id', $request->bank_sampah_unit_id)
+        $inventory = Inventories::where('bank_sampah_unit_id', $request->bank_sampah_unit_id)
             ->where('sampah_id', $item['sampah_id'])
             ->firstOrFail();
 
