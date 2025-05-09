@@ -49,7 +49,9 @@ public function store(Request $request)
     // Hitung total
     $total = 0;
     foreach ($request->items as $item) {
+
         $sampah = Sampah::find($item['sampah_id']);
+        return response()->json($sampah);
         $subtotal = $item['berat'] * $sampah->harga;
         
         DetailPenjualan::create([
