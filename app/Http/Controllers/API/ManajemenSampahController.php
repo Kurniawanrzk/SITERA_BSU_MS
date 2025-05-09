@@ -106,7 +106,6 @@ class ManajemenSampahController extends Controller
         ]);
     }
     
-    use Illuminate\Support\Str;
 
     public function transaksiSampahBSUNasabah(Request $request)
     {
