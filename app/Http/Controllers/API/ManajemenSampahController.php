@@ -53,7 +53,7 @@ class ManajemenSampahController extends Controller
         $apiKey = "AIzaSyAfSq_2UzoRuu-oSbJuTDrzvyTeVf36yc0";
 
         $client = new Client();
-        $response = $client->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=$apiKey", [
+        $response = $client->post("https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro-latest:generateContent?key=$apiKey", [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
