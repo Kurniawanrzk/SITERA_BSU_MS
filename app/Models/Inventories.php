@@ -21,4 +21,14 @@ class Inventories extends Model
         "created_at"
         
     ];
+
+    public function sampah()
+{
+    return $this->belongsTo(App\Models\Sampah::class, 'sampah_id');
+}
+
+public function bsu()
+{
+    return $this->belongsTo(App\Models\BankSampahUnit::class, 'bank_sampah_unit_id');
+}
 }

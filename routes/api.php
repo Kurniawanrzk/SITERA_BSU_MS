@@ -54,6 +54,8 @@ Route::prefix('v1/bsu')->group(function () {
     Route::middleware("checkifperusahaan")->group(function() {
         Route::post('/penjualan', [PenjualanController::class, 'store']);    
         Route::get('/penjualan/{id}/token', [PaymentController::class, 'getSnapToken']);
-
+        Route::get("/penjualan/sampah", [PenjualanController::class, "getSampahDijual"]);
     });
+
+    
 });

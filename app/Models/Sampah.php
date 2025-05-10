@@ -25,4 +25,6 @@ class Sampah extends Model
     {
         return $this->belongsTo(App\Models\BankSampahUnit::class, 'bank_sampah_unit_id');
     }
+
+ 
 }

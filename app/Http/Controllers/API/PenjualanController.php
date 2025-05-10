@@ -69,4 +69,43 @@ public function store(Request $request)
         'total' => $total
     ]);
 }
+
+public function getSampahDijual()
+{
+    try {
+        $inventories = Inventories::with(['sampah', 'bsu'])
+            ->where('berat_available', '>', 0)
+            ->get();
+
+        $transformedData = $inventories->map(function ($inventory) {
+            return [
+                'id' => $inventory->sampah->id,
+                'jenis_sampah' => $inventory->sampah->jenis,
+                'nama_sampah' => $inventory->sampah->nama,
+                'berat_tersedia' => $inventory->berat_available,
+                'harga_satuan' => $inventory->sampah->harga_satuan,
+                'satuan' => $inventory->sampah->satuan,
+                'bank_sampah' => [
+                    'id' => $inventory->bsu->id,
+                    'nama' => $inventory->bsu->nama,
+                    'alamat' => $inventory->bsu->alamat
+                ],
+                // 'gambar' => $inventory->sampah->gambar_url,
+                'deskripsi' => $inventory->sampah->deskripsi,
+                'tanggal_update' => $inventory->updated_at->format('Y-m-d H:i:s')
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $transformedData
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal mengambil data sampah: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }
