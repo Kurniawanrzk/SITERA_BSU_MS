@@ -18,7 +18,6 @@ public function store(Request $request)
 {
     
 
-    return response()->json($request->all());
 
     $id_perusahaan = $request->get("perusahaan_id");
 
