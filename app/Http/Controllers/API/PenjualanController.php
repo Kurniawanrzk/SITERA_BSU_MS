@@ -88,7 +88,7 @@ public function getByPerusahaan($idPerusahaan)
                 'items' => $item->detailPenjualan->map(function ($detail) {
                     return [
                         'id_sampah' => $detail->sampah->id,
-                        'jenis' => $detail->sampah->jenis,
+                        'jenis' => $detail->sampah->tipe,
                         'nama' => $detail->sampah->nama,
                         'berat' => $detail->berat,
                         'harga_satuan' => $detail->harga_satuan,
