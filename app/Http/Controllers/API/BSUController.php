@@ -66,7 +66,7 @@ class BSUController extends Controller
         ], 200);
     }
 
-    public function cekBSUDariUserId()
+    public function cekBSUDariUserId(Request $request)
     {
         $user_ids = $request->user_ids;
 
