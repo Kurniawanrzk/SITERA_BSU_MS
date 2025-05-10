@@ -20,11 +20,10 @@ public function store(Request $request)
 
     $id_perusahaan = $request->get("perusahaan_id");
 
-    return response()->json($request->all());
 
     // Cek stok
     foreach ($request->items as $item) {
-        $inventory = Inventories::where('bank_sampah_unit_id', $request->bank_sampah_unit_id)
+        $inventory = Inventories::where('bank_sampah_unit_id', $item->bank_sampah_unit_id)
             ->where('sampah_id', $item['sampah_id'])
             ->firstOrFail();
 
