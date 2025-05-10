@@ -519,8 +519,8 @@ class BSUController extends Controller
     public function registerBSU(Request $request)
     {
         $bsu = new BankSampahUnit();
-        $bsu->nama = request('nama');
-        $bsu->alamat = request('nomor_registrasi');
+        $bsu->nama_bsu = request('nama');
+        $bsu->nomor_registrasi = request('nomor_registrasi');
         $bsu->user_id = request('user_id');
         $bsu->save();
 
