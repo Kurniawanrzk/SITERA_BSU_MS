@@ -16,14 +16,11 @@ class PenjualanController extends Controller
 // PenjualanController.php
 public function store(Request $request)
 {
-    $request->validate([
-        'bank_sampah_unit_id' => 'required',
-        'items' => 'required|array',
-        'items.*.sampah_id' => 'required',
-        'items.*.berat' => 'required|numeric'
-    ]);
+   
 
     $id_perusahaan = $request->get("perusahaan_id");
+
+    return response()->json($request->all());
 
     // Cek stok
     foreach ($request->items as $item) {
