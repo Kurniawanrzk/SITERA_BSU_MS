@@ -540,6 +540,7 @@ class BSUController extends Controller
         $bsu->nama_bsu = request('nama');
         $bsu->nomor_registrasi = request('nomor_registrasi');
         $bsu->user_id = request('user_id');
+        $bsu->nomor_telepon = request('nomor_telepon');
         $bsu->save();
 
         return response()->json([
