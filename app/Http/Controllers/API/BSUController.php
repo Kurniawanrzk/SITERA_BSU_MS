@@ -516,6 +516,21 @@ class BSUController extends Controller
         ], 404);
     }
 
+    public function registerBSU()
+    {
+        $bsu = new BankSampahUnit();
+        $bsu->nama = request('nama');
+        $bsu->alamat = request('nomor_registrasi');
+        $bsu->user_id = request('user_id');
+        $bsu->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'BSU berhasil didaftarkan',
+            'data' => $bsu
+        ], 201);
+    }
+
     public function cekRekapitulasi()
     {
         // Default to current week if no dates specified
