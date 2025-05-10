@@ -66,8 +66,9 @@ public function store(Request $request)
     ]);
 }
 
-public function getByPerusahaan($idPerusahaan)
+public function getByPerusahaan()
 {
+    $idPerusahaan = request()->get('perusahaan_id');
     try {
         $penjualan = Penjualan::with(['detailPenjualan.sampah', 'bankSampahUnit'])
             ->where('id_perusahaan', $idPerusahaan)
