@@ -16,7 +16,7 @@ Route::prefix('v1/bsu')->group(function () {
     Route::get('/cek-user/{user_id}', [BSUController::class, "cekUser"]);
     Route::get('/cek-bsu', [BSUController::class, "cekSemuaBSU"]);
     Route::get('/cek-bsu/{id}', [BSUController::class, "cekBSUBerdasarkanNoRegis"]);
-    Route::post("/registrasi-bsu", [BSUController::class, "registrasiBSU"]);
+    Route::post("/registrasi-bsu", [BSUController::class, "registerBSU"]);
 
     // Hanya untuk BSU
     Route::middleware('checkIfBsu')->group(function () {
