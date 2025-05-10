@@ -87,7 +87,9 @@ public function getSampahDijual()
                 'satuan' => $inventory->sampah->satuan,
                 'bank_sampah' => [
                     'id' => $inventory->bsu->id,
-                    'nama' => $inventory->bsu->nama,
+                    'nama' => $inventory->bsu->nama_bsu,
+                    "nomor_telepon" => $inventory->bsu->nomor_telepon,
+                    "no_registrasi" => $inventory->bsu->no_registrasi,
                     'alamat' => $inventory->bsu->alamat
                 ],
                 'gambar' => $inventory->sampah->gambar_url,
