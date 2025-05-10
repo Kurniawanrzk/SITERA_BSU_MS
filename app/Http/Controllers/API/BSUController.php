@@ -516,7 +516,7 @@ class BSUController extends Controller
         ], 404);
     }
 
-    public function registerBSU()
+    public function registerBSU(Request $request)
     {
         $bsu = new BankSampahUnit();
         $bsu->nama = request('nama');
