@@ -66,6 +66,22 @@ class BSUController extends Controller
         ], 200);
     }
 
+    public function cekBSUDariUserId($user_id)
+    {
+        $bsu = BankSampahUnit::where("user_id", $user_id)->first();
+        if ($bsu) {
+            return response()->json([
+                "status" => true,
+                "data" => $bsu
+            ], 200);
+        } else {
+            return response()->json([
+                "status" => false,
+                "message" => "BSU not found."
+            ], 404);
+        }
+    }
+
     public function distribusiJenisSampah(Request $request)
     {
         $bsuId = $request->get("bsu_id");

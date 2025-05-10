@@ -59,5 +59,9 @@ Route::prefix('v1/bsu')->group(function () {
         Route::get("/penjualan/riwayat", [PenjualanController::class , "getByPerusahaan"]);
     });
 
+    Route::middleware("checkifsuperadmin")->group(function () {
+        Route::get('/cek-bsu-superadmin/{user_id}', [BSUController::class, "cekBSUDariUserId"]);
+    });
+
     
 });
