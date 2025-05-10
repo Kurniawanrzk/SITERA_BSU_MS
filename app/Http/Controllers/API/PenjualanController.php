@@ -80,7 +80,7 @@ public function getSampahDijual()
         $transformedData = $inventories->map(function ($inventory) {
             return [
                 'id' => $inventory->sampah->id,
-                'jenis_sampah' => $inventory->sampah->jenis,
+                'tipe_sampah' => $inventory->sampah->tipe,
                 'nama_sampah' => $inventory->sampah->nama,
                 'berat_tersedia' => $inventory->berat_available,
                 'harga_satuan' => $inventory->sampah->harga_satuan,
@@ -90,7 +90,7 @@ public function getSampahDijual()
                     'nama' => $inventory->bsu->nama,
                     'alamat' => $inventory->bsu->alamat
                 ],
-                // 'gambar' => $inventory->sampah->gambar_url,
+                'gambar' => $inventory->sampah->gambar_url,
                 'deskripsi' => $inventory->sampah->deskripsi,
                 'tanggal_update' => $inventory->updated_at->format('Y-m-d H:i:s')
             ];
