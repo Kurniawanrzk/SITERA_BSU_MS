@@ -43,6 +43,41 @@ class ManajemenSampahController extends Controller
         }
     }
 
+    public function AISampahDetection(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:4096',
+        ]);
+
+        $imageData = base64_encode(file_get_contents($request->file('image')->getPathname()));
+        $apiKey = "AIzaSyAfSq_2UzoRuu-oSbJuTDrzvyTeVf36yc0";
+
+        $client = new Client();
+        $response = $client->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=$apiKey", [
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'contents' => [[
+                    'parts' => [
+                        ['text' => 'Klasifikasikan gambar ini sebagai jenis sampah: organik, anorganik, PET, kertas, logam, atau lainnya.'],
+                        ['inlineData' => [
+                            'mimeType' => 'image/jpeg',
+                            'data' => $imageData
+                        ]]
+                    ]
+                ]]
+            ]
+        ]);
+
+        $body = json_decode($response->getBody(), true);
+        $hasil = $body['candidates'][0]['content']['parts'][0]['text'] ?? 'Tidak terdeteksi';
+
+        return response()->json([
+            'jenis_sampah' => $hasil
+        ]);
+    }
+
     public function tambahSampahBerdasarkanBSU(Request $request)
     {
         $request->validate([

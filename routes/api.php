@@ -60,6 +60,7 @@ Route::prefix('v1/bsu')->group(function () {
     });
 
         Route::get('/cek-bsu-superadmin', [BSUController::class, "cekBSUDariUserId"]);
+        Route::post("/sampah-detection", [ManajemenSampahController::class, "AISampahDetection"]);
 
 
     
