@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasUuid;
+use App\Models\BankSampahUnit;
+use App\Models\Sampah;
 
 class Inventories extends Model
 {
@@ -24,11 +26,11 @@ class Inventories extends Model
 
     public function sampah()
 {
-    return $this->belongsTo(App\Models\Sampah::class, 'sampah_id');
+    return $this->belongsTo(Sampah::class, 'sampah_id');
 }
 
 public function bsu()
 {
-    return $this->belongsTo(App\Models\BankSampahUnit::class, 'bank_sampah_unit_id');
+    return $this->belongsTo(BankSampahUnit::class, 'bank_sampah_unit_id');
 }
 }
