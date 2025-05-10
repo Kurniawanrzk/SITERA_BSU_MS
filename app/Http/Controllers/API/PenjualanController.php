@@ -82,7 +82,7 @@ public function getByPerusahaan($idPerusahaan)
                 'status' => $item->status,
                 'bank_sampah' => [
                     'id' => $item->bankSampahUnit->id,
-                    'nama' => $item->bankSampahUnit->nama,
+                    'nama' => $item->bankSampahUnit->nama_bsu,
                     'alamat' => $item->bankSampahUnit->alamat
                 ],
                 'items' => $item->detailPenjualan->map(function ($detail) {
