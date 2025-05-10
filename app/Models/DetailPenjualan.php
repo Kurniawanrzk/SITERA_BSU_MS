@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasUuid;
+use App\Models\BankSampahUnit;
+use App\Models\Sampah;
+use App\Models\DetailPenjualan;
+
 
 class DetailPenjualan extends Model
 {
@@ -22,5 +26,10 @@ class DetailPenjualan extends Model
     ];
 
     public $timestamps = false;
+
+    public function sampah()
+{
+    return $this->belongsTo(Sampah::class, 'sampah_id');
+}
 
 }

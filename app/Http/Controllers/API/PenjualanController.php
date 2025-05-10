@@ -39,7 +39,7 @@ public function store(Request $request)
         'id_perusahaan' =>  $id_perusahaan,
         'bank_sampah_unit_id' => $item['bank_sampah_unit_id'],
         'total_harga' => 0,
-        'status' => 'pending'
+        'status' => 'Belum Dikelola'
     ]);
     // Hitung total
     $total = 0;
@@ -64,6 +64,51 @@ public function store(Request $request)
         'order_id' => $penjualan->id,
         'total' => $total
     ]);
+}
+
+public function getByPerusahaan($idPerusahaan)
+{
+    try {
+        $penjualan = Penjualan::with(['detailPenjualan.sampah', 'bankSampahUnit'])
+            ->where('id_perusahaan', $idPerusahaan)
+            ->orderBy('waktu_penjualan', 'desc') // Diubah ke waktu_penjualan
+            ->get();
+
+        $transformedData = $penjualan->map(function ($item) {
+            return [
+                'id_penjualan' => $item->id,
+                'tanggal_penjualan' => $item->waktu_penjualan, // Diubah ke waktu_penjualan
+                'total_harga' => $item->total_harga,
+                'status' => $item->status,
+                'bank_sampah' => [
+                    'id' => $item->bankSampahUnit->id,
+                    'nama' => $item->bankSampahUnit->nama,
+                    'alamat' => $item->bankSampahUnit->alamat
+                ],
+                'items' => $item->detailPenjualan->map(function ($detail) {
+                    return [
+                        'id_sampah' => $detail->sampah->id,
+                        'jenis' => $detail->sampah->jenis,
+                        'nama' => $detail->sampah->nama,
+                        'berat' => $detail->berat,
+                        'harga_satuan' => $detail->harga_satuan,
+                        'subtotal' => $detail->subtotal
+                    ];
+                })
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $transformedData
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal mengambil data penjualan: ' . $e->getMessage()
+        ], 500);
+    }
 }
 
 public function getSampahDijual()
