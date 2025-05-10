@@ -70,7 +70,7 @@ class BSUController extends Controller
     {
         $user_ids = $request->user_ids;
 
-        $bsu = BankSampahUnit::whereIn("user_id", $user_id)->get();
+        $bsu = BankSampahUnit::whereIn("user_id", $user_ids)->get();
         if ($bsu) {
             return response()->json([
                 "status" => true,
