@@ -68,7 +68,9 @@ class BSUController extends Controller
 
     public function cekBSUDariUserId($user_id)
     {
-        $bsu = BankSampahUnit::where("user_id", $user_id)->first();
+        $user_ids = $request->user_ids;
+
+        $bsu = BankSampahUnit::whereIn("user_id", $user_id)->get();
         if ($bsu) {
             return response()->json([
                 "status" => true,

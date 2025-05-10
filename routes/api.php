@@ -60,7 +60,7 @@ Route::prefix('v1/bsu')->group(function () {
     });
 
     Route::middleware("checkifsuperadmin")->group(function () {
-        Route::get('/cek-bsu-superadmin/{user_id}', [BSUController::class, "cekBSUDariUserId"]);
+        Route::get('/cek-bsu-superadmin', [BSUController::class, "cekBSUDariUserId"]);
     });
 
     
